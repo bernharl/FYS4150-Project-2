@@ -37,5 +37,17 @@ inline double s(double c, double t)
 
 int main()
 {
+  //arma::mat A = arma::mat(n, n, arma::fill::zeros);
+  arma::mat zero_diag_matrix = arma::ones <arma::mat> (n, n);
+  zero_diag_matrix.diag(0).fill(0);
+  arma::mat A = arma::zeros <arma::mat> (n, n);
+  A.diag(0).fill(d);
+  A.diag(1).fill(a);
+  A.diag(-1).fill(a);
+
+  while((A.*zero_diag_matrix)*(A.*zero_diag_matrix)).max() > eps)
+  {
+
+  }
   return 0;
 }
