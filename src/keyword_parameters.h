@@ -1,4 +1,4 @@
-int n = 1e3;
+int n = 5;
 double h = 1. / (double) n;
 double eps = 1e-8;
 double d = 2. / (h * h);
