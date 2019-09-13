@@ -100,9 +100,26 @@ void TEST_OFFMAX()
   assert(max_val == fabs(t) && k == 2 && l == 1);
 }
 
+void TEST_OFFDIAG_IS_ZERO()
+{
+  arma::mat A = arma::zeros <arma::mat> (5, 5);
+  A.diag(0).fill(2);
+  A.diag(1).fill(-1);
+  A.diag(-1).fill(-1);
+  Jacobi_Algorithm(A);
+  for (int i = 0; i < n; i++){
+    for (int j = 0; j < n; j++){
+      if (i != j){
+        assert(fabs(A(i, j) * A(i, j)) <= eps);
+      }
+    }
+  }
+
+}
+
 int main()
 { 
-  TEST_ODDMAX();
+  TEST_OFFMAX();
   TEST_JACOBI_ALGORITHM();
   TEST_OFFDIAG_IS_ZERO();
   arma::mat A = arma::zeros <arma::mat> (n, n);
