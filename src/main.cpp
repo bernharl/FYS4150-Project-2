@@ -8,7 +8,8 @@ using namespace std;
 
 
 double max_offdiag(const arma::mat &A, int &k, int &l, int n)
-{
+{ 
+  
   double max_val = 0.0;
   for (int i = 0; i < n; i++){
     for (int j = 0; j < n; j++){
@@ -22,16 +23,12 @@ double max_offdiag(const arma::mat &A, int &k, int &l, int n)
   return max_val;
 }
 
-void Jacobi_Algorithm(arma::mat &A)
+void Jacobi_Algorithm(arma::mat &A, int n)
 {
-
-  arma::mat B;
   int k, l;
-
   double max_val = max_offdiag(A, k, l, n);
   double a_ll, a_kk, a_ik, a_il, a_kl;
   double t_val, tau, c, s; 
-
   while(max_val * max_val > eps)
   {
     a_kl = A(k, l);
@@ -70,10 +67,18 @@ void Jacobi_Algorithm(arma::mat &A)
     //cout << A << endl;
 }
 
+void Harmonic_Potential(arma::vec &V)
+{ 
+  for (int i = 0; i < n; i++)
+  {
+    V(i) = (rho0 + i * h) * (rho0 + i * h);
+  }
+}
 
 void TEST_JACOBI_ALGORITHM()
 { 
-  arma::mat A = arma::zeros <arma::mat> (5, 5);
+  int N = 5;
+  arma::mat A = arma::zeros <arma::mat> (N, N);
   A.diag(0).fill(2);
   A.diag(1).fill(-1);
   A.diag(-1).fill(-1);
@@ -84,37 +89,37 @@ void TEST_JACOBI_ALGORITHM()
   arma::eig_gen(eig_val, eig_vec, A);
   
   //Finding eigenvalues with Jacobi algorithm
-  Jacobi_Algorithm(A);
+  Jacobi_Algorithm(A, N);
   arma::vec calculated_eig_vals = A.diag();
-  assert(norm(sort(A.diag()) - sort(real(eig_val))) <= eps);
+  assert(arma::norm(arma::sort(A.diag()) - arma::sort(arma::real(eig_val))) <= eps);
 }
 
 void TEST_OFFMAX()
 { 
   double t = -1e3; //Number with larger fabs than 0
-  int n = 5;
+  int N = 5;
   int k, l;
-  arma::mat T = arma::zeros <arma::mat> (5, 5); //Making matrix of zeros
+  arma::mat T = arma::zeros <arma::mat> (N, N); //Making matrix of zeros
   T(2, 1)     = t; // Setting one element to high value
-  double max_val = max_offdiag(T, k, l, n);
+  double max_val = max_offdiag(T, k, l, N);
   assert(max_val == fabs(t) && k == 2 && l == 1);
 }
 
 void TEST_OFFDIAG_IS_ZERO()
-{
-  arma::mat A = arma::zeros <arma::mat> (5, 5);
+{ 
+  int N = 5;
+  arma::mat A = arma::zeros <arma::mat> (N, N);
   A.diag(0).fill(2);
   A.diag(1).fill(-1);
   A.diag(-1).fill(-1);
-  Jacobi_Algorithm(A);
-  for (int i = 0; i < n; i++){
-    for (int j = 0; j < n; j++){
+  Jacobi_Algorithm(A, N);
+  for (int i = 0; i < N; i++){
+    for (int j = 0; j < N; j++){
       if (i != j){
         assert(fabs(A(i, j) * A(i, j)) <= eps);
       }
     }
   }
-
 }
 
 int main()
@@ -126,7 +131,17 @@ int main()
   A.diag(0).fill(d);
   A.diag(1).fill(a);
   A.diag(-1).fill(a);
-  Jacobi_Algorithm(A);
+  Jacobi_Algorithm(A, n);
+  
+  arma::vec V = arma::zeros <arma::vec> (n);
+  Harmonic_Potential(V);
+  
+  arma::mat P = arma::zeros <arma::mat> (n, n);
+  P.diag(0) += d + V;
+  P.diag(1).fill(a);
+  P.diag(-1).fill(a);
+  cout << P << endl;
+  
   return 0;
 }
 
