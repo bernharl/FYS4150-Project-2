@@ -2,8 +2,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
-
-#include "keyword_parameters.h"
+#include "main.h"
+//#include "keyword_parameters.h"
 using namespace std;
 
 
@@ -71,24 +71,6 @@ void Jacobi_Algorithm(arma::mat &A)
 }
 
 
-void TEST_JACOBI_ALGORITHM()
-{ 
-  arma::mat A = arma::zeros <arma::mat> (5, 5);
-  A.diag(0).fill(2);
-  A.diag(1).fill(-1);
-  A.diag(-1).fill(-1);
-
-  //Finding eigenvalues with armadillo
-  arma::cx_vec eig_val;
-  arma::cx_mat eig_vec;
-  arma::eig_gen(eig_val, eig_vec, A);
-  
-  //Finding eigenvalues with Jacobi algorithm
-  Jacobi_Algorithm(A);
-  arma::vec calculated_eig_vals = A.diag();
-  assert(norm(sort(A.diag()) - sort(real(eig_val))) <= eps);
-}
-
 void TEST_OFFMAX()
 { 
   double t = -1e3; //Number with larger fabs than 0
@@ -119,14 +101,13 @@ void TEST_OFFDIAG_IS_ZERO()
 
 int main()
 { 
+
   TEST_OFFMAX();
-  TEST_JACOBI_ALGORITHM();
   TEST_OFFDIAG_IS_ZERO();
   arma::mat A = arma::zeros <arma::mat> (n, n);
   A.diag(0).fill(d);
   A.diag(1).fill(a);
   A.diag(-1).fill(a);
-  Jacobi_Algorithm(A);
   return 0;
 }
 
