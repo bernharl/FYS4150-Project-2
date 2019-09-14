@@ -1,18 +1,21 @@
 
-\documentclass{aastex62}
+\documentclass[twocolumn]{aastex62}
 
 
 \newcommand{\vdag}{(v)^\dagger}
 \newcommand\aastex{AAS\TeX}
 \newcommand\latex{La\TeX}
-
-
-
-
+\usepackage{amsmath}
+\usepackage{physics}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
 
 \begin{document}
 
-\title{Project 1 FYS4150}
+\title{Project 2 FYS4150}
 
 
 
@@ -28,9 +31,64 @@
 \end{abstract}
 
 \section{Introduction} \label{sec:intro}
+When solving physical and mathematical problems using methods from linear algebra, a reoccouring problem is to find eigenvalues of a matrix or opperator. Since a wide variety of problems can be solved by setting up and solving eigenvalue equations it is, essential to develop efficient methods for finding eigenvalues. 
+
+In this problem we will develop an eigenvalue solver using a classical example of an eigenvalue problem; the Schrödinger equation for a single electron in an harmonic oscillator potential and the Coulomb interaction between two electrons. The Schrödinger equation can be scaled in such a way that the resulting equation can also be used for a lot of other problems, not just problems from quantum mechanics. The eigenvalues of the Hamiltonian operator is then found by discretizing the equation, then finding the the eigenvalues using a Jacobi algorithm (KILDE).
 
 \section{Method} \label{sec:method}
+Before attacking the quantum mechanical problem directely we will first consider the classical wave equation for a bulcking beam in one dimension
+\begin{align}
+	\gamma\dv[2]{u(x)}{x} = -F(x)u(x).
+	\label{eq:beam_wave}
+\end{align} 
+Here $u(x)$ represents the vertical displacement of the beam along the $y$-direction. We let $x\in[0,L]$ for a beam length $L$. The constant $\gamma$ is a material dependent parameter giving the beams regidity and $F$ is the force applyed at the interval $(0, L)$. Next the Dirichlet boundary conditions are imposed so that $u(0) = u(L) = 0$. We consider the three parameters $F$, $L$ and $\gamma$ as known.
+In order to make the equation more convinient to handle, we scale the integration variable to the beam length as 
+\begin{align}
+	\rho = \frac{x}{L},
+\end{align}
+so that the new dimensionless integration variable $\rho\in[0, 1]$. We can now rewrite (\ref{eq:beam_wave}) as 
+\begin{align}
+	\dv[2]{u(\rho)}{\rho} = -\frac{FL^2}{\gamma}u(\rho) = -\lambda u(\rho),
+	\label{eq:wave_eq_dimless}
+\end{align}
+where we define $\lambda = \frac{FL^2}{\gamma}$. In order to solve (\ref{eq:wave_eq_dimless}) for the $\lambda$'s numerically we need to discretize the equation. This is done by using the approximation 
+\begin{align}
+	\dv[2]{u}{x} = \frac{u(\rho + h) - 2u(\rho) + u(\rho - h)}{h^2} + \mathcal{O}(h^2),
+\end{align}
+for a step length $h = \frac{\rho_n - \rho_0}{n}$, where $\rho_0 = \rho_\text{min} = 0$ and $\rho_n = rho_\text{max} = 1$ are the boundaries and $n$ is the grid size. Thus the dimensionless distance $\rho$ is discretized as
+\begin{align}
+	\rho\to\rho_i = \rho_0 + ih,
+\end{align}
+where $i = 0, 1, 2, 3, \ldots n-1$. Inserting this into the differential equation (\ref{eq:wave_eq_dimless}) we get the discretized wave equation as 
+\begin{align}
+	&-\frac{u(\rho_i + h) - 2u(\rho_i) + u(\rho_i - h)}{h^2}= \lambda u(\rho_i) \\
+	&\implies -\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} = \lambda u_i ,
+\end{align}
+where $u_i$ denotes $u(\rho_i)$. This can easily be fomulated as a matrix equation 
+\begin{align}
+	A\vec{u} = \lambda\vec{u},
+\end{align}
+by introducing the vector $\vec{u}^T = [u_1, u_2, \ldots, u_{n-1}]$ and the matrix
+\begin{align}
+A = 
+	\begin{bmatrix} 
+	d& a & 0   & 0    & \dots  &0     & 0 \\
+    a & d & a & 0    & \dots  &0     &0 \\
+    0   & a & d & a  &0       &\dots & 0\\
+    \dots  & \dots & \dots & \dots  &\dots      &\dots & \dots\\
+    0   & \dots & \dots & \dots  &a  &d & a\\
+   0   & \dots & \dots & \dots  &\dots       &a & d
+    \end{bmatrix} ,
+\end{align}
+where $a = -\frac{1}{h^2}$ and $d = \frac{2}{h^2}$.
+By this point the problem is reformulated into an eigenvalue problem where the $\lambda$'s are the eigenvalue we want to find. 
+We will later show how to arrive at the classical wave equation on this form by rewriting the Schrödinger equation. Thus by scaling such a differential equation one can develop a powerfull algorithm that can handle a variety of different eigenvalue equations. In the case of the beam we know the analytical solution to the eigenvalues 
+\begin{align}
+	\lambda_i = d + 2a \cos\left(\frac{j\pi}{n+1}\left)\quad j = 1, 2, 3, \ldots n,
+\end{align}
+enabling a comparison to the numerical result of the solver we present. 
 
+The eigenvalue solver we will show is using the Jacobi algorithm, which is very stable, yet converges quite slowly. The essence of the algorithm is that we can rotate the column space around different axis in the $n$ dimensional space 
 \section{Results} \label{sec:results}
 
 \section{Discussion} \label{sec:discussion}
