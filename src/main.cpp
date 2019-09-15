@@ -6,71 +6,93 @@
 //#include "keyword_parameters.h"
 using namespace std;
 
+class EigenSolver{
+  int n;
+  double eps;
+  double h;
+  double d;
+  double a;
 
-double max_offdiag(const arma::mat &A, int &k, int &l, int n)
-{
-  double max_val = 0.0;
-  for (int i = 0; i < n; i++){
-    for (int j = 0; j < n; j++){
-      if (i != j && fabs(A(i, j)) > max_val){
-        max_val = fabs(A(i, j));
-        k = i;
-        l = j;
-      }
+  public:
+
+   void set_var_pub() 
+    {
+    n = 5;
+    eps = 1e-8;
     }
-  }
-  return max_val;
-}
-
-void Jacobi_Algorithm(arma::mat &A)
-{
-
-  arma::mat B;
-  int k, l;
-
-  double max_val = max_offdiag(A, k, l, n);
-  double a_ll, a_kk, a_ik, a_il, a_kl;
-  double t_val, tau, c, s; 
-
-  while(max_val * max_val > eps)
+  void Jacobi_Algorithm(arma::mat &A)
   {
-    a_kl = A(k, l);
-    a_ll = A(l, l);
-    a_kk = A(k, k);
 
-    tau = (a_ll - a_kk) / (2. * a_kl);
-    if(tau > 0)
-    {
-      t_val = 1.0 / (tau + sqrt(1. + tau * tau));
-    }
-    else
-    {
-      t_val = -1.0 / (-tau + sqrt(1. + tau * tau));
-    }
-    c = 1. / sqrt(1. + t_val * t_val);
-    s = t_val * c; 
+    arma::mat B;
+    int k, l;
 
-    A(k, k) = a_kk * c * c - 2.0 * a_kl * c * s + a_ll * s * s;
-    A(l, l) = a_ll * c * c + 2.0 * a_kl * c * s + a_kk * s * s;
-    A(l, k) = A(k, l) = 0;
+    double max_val = max_offdiag(A, k, l, n);
+    double a_ll, a_kk, a_ik, a_il, a_kl;
+    double t_val, tau, c, s; 
 
-    for (int i = 0; i < n; i++)
+    while(max_val * max_val > eps)
     {
-      a_ik = A(i, k);
-      a_il = A(i, l);
-      if (i != k && i != l)
+      a_kl = A(k, l);
+      a_ll = A(l, l);
+      a_kk = A(k, k);
+
+      tau = (a_ll - a_kk) / (2. * a_kl);
+      if(tau > 0)
       {
-        A(i, k) = A(k, i) = a_ik * c - a_il * s;
-        A(i, l) = A(l, i) = a_il * c + a_ik * s;
+        t_val = 1.0 / (tau + sqrt(1. + tau * tau));
       }
+      else
+      {
+        t_val = -1.0 / (-tau + sqrt(1. + tau * tau));
+      }
+      c = 1. / sqrt(1. + t_val * t_val);
+      s = t_val * c; 
 
+      A(k, k) = a_kk * c * c - 2.0 * a_kl * c * s + a_ll * s * s;
+      A(l, l) = a_ll * c * c + 2.0 * a_kl * c * s + a_kk * s * s;
+      A(l, k) = A(k, l) = 0;
+
+      for (int i = 0; i < n; i++)
+      {
+        a_ik = A(i, k);
+        a_il = A(i, l);
+        if (i != k && i != l)
+        {
+          A(i, k) = A(k, i) = a_ik * c - a_il * s;
+          A(i, l) = A(l, i) = a_il * c + a_ik * s;
+        }
+
+      }
+      cout << A << endl;
+      max_val = max_offdiag(A, k, l, n);
     }
-    max_val = max_offdiag(A, k, l, n);
+    cout << A << endl;
   }
-    //cout << A << endl;
-}
 
+  private:
+    void set_var_priv()
+    {
+    h = 1. / (double) n;
+    d = 2. / (h * h)* 0 + 2.;
+    a = -1. / (h * h) * 0 +1.;
+    }
+  double max_offdiag(const arma::mat &A, int &k, int &l, int n)
+  {
+    double max_val = 0.0;
+    for (int i = 0; i < n; i++){
+      for (int j = 0; j < n; j++){
+        if (i != j && fabs(A(i, j)) > max_val){
+          max_val = fabs(A(i, j));
+          k = i;
+          l = j;
+        }
+      }
+    }
+    return max_val;
+  }
+};
 
+/*
 void TEST_OFFMAX()
 { 
   double t = -1e3; //Number with larger fabs than 0
@@ -98,16 +120,20 @@ void TEST_OFFDIAG_IS_ZERO()
   }
 
 }
-
+*/
 int main()
 { 
 
-  TEST_OFFMAX();
-  TEST_OFFDIAG_IS_ZERO();
-  arma::mat A = arma::zeros <arma::mat> (n, n);
-  A.diag(0).fill(d);
-  A.diag(1).fill(a);
-  A.diag(-1).fill(a);
+  //TEST_OFFMAX();
+  //TEST_OFFDIAG_IS_ZERO();
+  EigenSolver a;
+  int N = 5;
+  arma::mat A = arma::zeros <arma::mat> (N, N);
+  A.diag(0).fill(2);
+  A.diag(1).fill(-1);
+  A.diag(-1).fill(-1);
+  
+  a.Jacobi_Algorithm(A);
   return 0;
 }
 
