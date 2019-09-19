@@ -1,11 +1,13 @@
 #include <armadillo>
+#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
+#include <iomanip>
 #include <ctime>
 #include <cmath>
+#include <stdexcept>
 
-#include "keyword_parameters.h"
 using namespace std;
 
 
@@ -24,7 +26,6 @@ k,l: int
   The indices of the maximum value
  */
 { 
-  
   double max_val = 0.0;
   for (int i = 0; i < n; i++){
     for (int j = 0; j < n; j++){
@@ -38,24 +39,33 @@ k,l: int
   return max_val;
 }
 
-void Jacobi_Algorithm(arma::mat &A, arma::mat &E, int n)
+void Jacobi_Algorithm(arma::mat &A, arma::mat &E, int n, double h, double eps)
 /*
 Implements the jacobi algorithm for finding the
 eigenvalues on an nxn matrix
 
 Parameters
 ------------
-A:arma::mat
- An armadillo object nxn matrix
+A: arma::mat
+  An armadillo object nxn matrix
+E: arma::mat
+  An armadillo object nxn matrix.
+  Serves as an orthogonal basis of n dimensional space
 n: int
  The dimensions of A
+h: double
+  The step size
+eps: double
+  Tolerance for treating off-diagonal elements in A as zero
  */
 {
+
   int k, l;
   double max_val = max_offdiag(A, k, l, n);
   double a_ll, a_kk, a_ik, a_il, a_kl, e_ik, e_il;
   double t_val, tau, c, s; 
   double iterator = 0;
+  int tot_iterations = 3 * n * n;
 
   while(max_val * max_val > eps && iterator <= tot_iterations)
   { 
@@ -98,7 +108,7 @@ n: int
   }
 }
 
-void Harmonic_Potential(arma::vec &V, double rho0, double h, int n)
+void Harmonic_Potential(arma::vec &V, double rho0, int n, double h)
 /*
 Computes the harmonic oscillator potential a particle
 
@@ -147,123 +157,117 @@ omega_r: double
   }
 }
 
-void TEST_JACOBI_ALGORITHM()
-/*
-Compares eigenvalues computed by the Jacobi_Algorithm method
-with armadillo eig_gen method
- */
-{ 
-  int N = 5;
-  arma::mat A = arma::zeros <arma::mat> (N, N);
-  arma::mat E = arma::eye <arma::mat> (N, N);
-  A.diag(0).fill(2);
-  A.diag(1).fill(-1);
-  A.diag(-1).fill(-1);
 
-  //Finding eigenvalues with armadillo
-  arma::cx_vec eig_val;
-  arma::cx_mat eig_vec;
-  arma::eig_gen(eig_val, eig_vec, A);
-  
-  //Finding eigenvalues with Jacobi algorithm
-  Jacobi_Algorithm(A, E, N);
-  arma::vec calculated_eig_vals = A.diag();
-  assert(arma::norm(arma::sort(A.diag()) - arma::sort(arma::real(eig_val))) <= eps);
-}
+//hallabrur
 
-void TEST_OFFMAX()
-/*
-Verifies that max_offdiag method chooses
-the correct maximum value and checks indices
- */
+int main(int argc, char* argv[])
 { 
-  double t = -1e3; //Number with larger fabs than 0
-  int N = 5;
-  int k, l;
-  arma::mat T = arma::zeros <arma::mat> (N, N); //Making matrix of zeros
-  T(2, 1)     = t; // Setting one element to high value
-  double max_val = max_offdiag(T, k, l, N);
-  assert(k == 2 && l == 1 && max_val == fabs(t) );
-}
+  int n;
+  double eps;
+  double rhoN;
 
-void TEST_OFFDIAG_IS_ZERO()
-/*
-Verifies that the offdiagonal elements is zero after 
-calling Jacobi_Algorithm method.
- */
-{ 
-  int N = 5;
-  arma::mat A = arma::zeros <arma::mat> (N, N);
-  arma::mat E = arma::eye <arma::mat> (N, N);
-  A.diag(0).fill(2);
-  A.diag(1).fill(-1);
-  A.diag(-1).fill(-1);
-  Jacobi_Algorithm(A, E, N);
-  for (int i = 0; i < N; i++){
-    for (int j = 0; j < N; j++){
-      if (i != j){
-        assert(fabs(A(i, j) * A(i, j)) <= eps);
-      }
-    }
+  if( argc != 4 ){
+    throw invalid_argument("Program takes two variables only through command line. Please insert dimension n and toleranse epsilon and rhoN.");
   }
-}
-
-void TEST_ORTHOGONALITY()
-/*
-Verifies that the columns in A are orthogonal 
-after calling the Jacobi_Algorithm method.
- */
-{
-  int N = 3;
-  arma::mat A = arma::zeros <arma::mat> (N, N);
-  arma::mat E = arma::eye <arma::mat> (N, N);
-  A.diag(0).fill(2);
-  A.diag(1).fill(-1);
-  A.diag(-1).fill(-1);
-  Jacobi_Algorithm(A, E, N);
-  for (int i = 0; i < N; i++){
-    for (int j = 0; j < N; j++){
-      if (i != j){
-        assert(arma::dot(E.col(i), E.col(j)) <= eps);
-      }
-    }
+  else{
+    n = atoi(argv[1]);
+    eps = atof(argv[2]);
+    rhoN = atof(argv[3]);
   }
-}
+
+  double h;
+  double d;
+  double a;
+  double rho0 = 0.0;
 
 
-int main()
-{ 
-  TEST_OFFMAX();
-  TEST_JACOBI_ALGORITHM();
-  TEST_OFFDIAG_IS_ZERO();
-  TEST_ORTHOGONALITY();
-  /* 
+  h = (rhoN - rho0) / ((double) n + 1);
+  d = 2. / (h * h);
+  a = -1. / (h * h);
+
   arma::mat A = arma::zeros <arma::mat> (n, n);
   arma::mat E = arma::eye <arma::mat> (n, n);
   A.diag(0).fill(d);
   A.diag(1).fill(a);
   A.diag(-1).fill(a);
 
-  Jacobi_Algorithm(A, E, n);
-  */
-  
+  Jacobi_Algorithm(A, E, n, h, eps);
+  cout << A.diag(0) << endl;
+
+ 
   arma::vec V = arma::zeros <arma::vec> (n);
-  Harmonic_Potential(V, rho0, h, n);
+  Harmonic_Potential(V, rho0, n, h);
   arma::mat P = arma::zeros <arma::mat> (n, n);
-  arma::mat E = arma::eye <arma::mat> (n, n);
   P.diag(0) += d + V;
   P.diag(1).fill(a);
   P.diag(-1).fill(a);
 
-  clock_t t_start = clock(); // Initializing timer
-  Jacobi_Algorithm(P, E, n);
-  clock_t t_end = clock(); // End timer
-  double CPU_time = (t_end - t_start) / CLOCKS_PER_SEC; // Calculating CPU time [ms]
+  
+  Jacobi_Algorithm(P, E, n, h, eps);
   arma:: vec diags = arma::sort(P.diag(0));
   cout << diags(0) << " " << diags(1) << " " 
        << diags(2) << " " << diags(3) << endl;
+
+
+
+  int length = 5;
+  arma:: vec rho_max = arma::linspace<arma::vec>(1 ,20, length);
+
+  double vars[5][length];
+
+  clock_t t_start = clock(); // Initializing timer
+
+  double progress = 0;
+  //#pragma omp parallel for
+  for (int i=0; i<length; i++) 
+  {
+    arma::mat P = arma::zeros <arma::mat> (n, n);
+    rhoN = rho_max(i);
+    h = (rhoN - rho0) / ((double) n + 1);
+    d = 2. / (h * h);
+    a = -1. / (h * h);
+
+    arma::vec V = arma::zeros <arma::vec> (n);
+    Harmonic_Potential(V, rho0, n, h);
+    arma::mat E = arma::eye <arma::mat> (n, n);
+    P.diag(0) += d + V;
+    P.diag(1).fill(a);
+    P.diag(-1).fill(a);
+    Jacobi_Algorithm(P, E, n, h, eps);
+
+    arma:: vec diags = arma::sort(P.diag(0));
+
+    vars[0][i] = rhoN;
+    vars[1][i] = diags(0);
+    vars[2][i] = diags(1);
+    vars[3][i] = diags(2);
+    vars[4][i] = diags(3);
+    progress += 1;
+    cout << "iterations left: "<< progress << "/" << length << endl;
+  }
+  clock_t t_end = clock(); // End timer
+  double CPU_time = (t_end - t_start) / CLOCKS_PER_SEC;
   cout << "Run time: " << CPU_time << " s " << endl;
-  
+
+  ofstream outfile;
+  outfile.open("eigendata.dat");
+  outfile << setw(20) << "rhoN"
+          << setw(20) << "l1"
+          << setw(20) << "l2"
+          << setw(20) << "l3"
+          << setw(20) << "l4" << endl;
+
+
+  for (int i=0; i<length; i++) 
+  {
+    outfile << setprecision(7) << setw(20) << vars[0][i]
+            << setprecision(7) << setw(20) << vars[1][i]
+            << setprecision(7) << setw(20) << vars[2][i]
+            << setprecision(7) << setw(20) << vars[3][i]
+            << setprecision(7) << setw(20) << vars[4][i] << endl;
+
+  }
+  outfile.close();
+
   return 0;
 }
-
