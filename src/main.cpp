@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
+#include <iomanip>
 #include <ctime>
 #include <cmath>
 
@@ -39,25 +40,25 @@ k,l: int
   return max_val;
 }
 
-<<<<<<< HEAD
-void Jacobi_Algorithm(arma::mat &A, int n, double h)
-=======
-void Jacobi_Algorithm(arma::mat &A, arma::mat &E, int n)
->>>>>>> master
+void Jacobi_Algorithm(arma::mat &A, arma::mat &E, int n, double h)
 /*
 Implements the jacobi algorithm for finding the
 eigenvalues on an nxn matrix
 
 Parameters
 ------------
-A:arma::mat
- An armadillo object nxn matrix
+A: arma::mat
+  An armadillo object nxn matrix
+E: arma::mat
+  An armadillo object nxn matrix.
+  Serves as an orthogonal basis of n dimensional space
 n: int
  The dimensions of A
 h: double
   The step size
  */
 {
+
   int k, l;
   double max_val = max_offdiag(A, k, l, n);
   double a_ll, a_kk, a_ik, a_il, a_kl, e_ik, e_il;
@@ -154,6 +155,113 @@ omega_r: double
   }
 }
 
+
+
+
+int main()
+{ 
+  /* 
+  TEST_OFFMAX();
+  TEST_JACOBI_ALGORITHM();
+  TEST_OFFDIAG_IS_ZERO();
+  TEST_ORTHOGONALITY();
+
+  arma::mat A = arma::zeros <arma::mat> (n, n);
+  arma::mat E = arma::eye <arma::mat> (n, n);
+  A.diag(0).fill(d);
+  A.diag(1).fill(a);
+  A.diag(-1).fill(a);
+
+  Jacobi_Algorithm(A, E, n);
+  
+  double h;
+  double rhoN;
+  clock_t t_start = clock(); // Initializing timer
+  arma::vec V = arma::zeros <arma::vec> (n);
+  Harmonic_Potential(V, rho0, h, n);
+  arma::mat P = arma::zeros <arma::mat> (n, n);
+  arma::mat E = arma::eye <arma::mat> (n, n);
+  P.diag(0) += d + V;
+  P.diag(1).fill(a);
+  P.diag(-1).fill(a);
+
+  clock_t t_start = clock(); // Initializing timer
+  Jacobi_Algorithm(P, E, n);
+  clock_t t_end = clock(); // End timer
+  double CPU_time = (t_end - t_start) / CLOCKS_PER_SEC; // Calculating CPU time [ms]
+  arma:: vec diags = arma::sort(P.diag(0));
+  cout << diags(0) << " " << diags(1) << " " 
+       << diags(2) << " " << diags(3) << endl;
+  cout << "Run time: " << CPU_time << " s " << endl;
+
+  */
+
+  double h;
+  double rhoN;
+  double d;
+  double a;
+  int length = 5;
+  arma:: vec rho_max = arma::linspace<arma::vec>(1 ,20, length);
+
+  double vars[5][length];
+
+  clock_t t_start = clock(); // Initializing timer
+
+  double progress = 0;
+  //#pragma omp parallel for
+  for (int i=0; i<length; i++) 
+  {
+    arma::mat P = arma::zeros <arma::mat> (n, n);
+    rhoN = rho_max(i);
+    h = (rhoN - rho0) / ((double) n + 1);
+    d = 2. / (h * h);
+    a = -1. / (h * h);
+
+    arma::vec V = arma::zeros <arma::vec> (n);
+    Harmonic_Potential(V, rho0, h, n);
+    arma::mat E = arma::eye <arma::mat> (n, n);
+    P.diag(0) += d + V;
+    P.diag(1).fill(a);
+    P.diag(-1).fill(a);
+    Jacobi_Algorithm(P, E, n, h);
+    arma:: vec diags = arma::sort(P.diag(0));
+
+    vars[0][i] = rhoN;
+    vars[1][i] = diags(0);
+    vars[2][i] = diags(1);
+    vars[3][i] = diags(2);
+    vars[4][i] = diags(3);
+    progress += 1;
+    cout << "iterations left: "<< progress << "/" << length << endl;
+  }
+  clock_t t_end = clock(); // End timer
+  double CPU_time = (t_end - t_start) / CLOCKS_PER_SEC;
+  cout << "Run time: " << CPU_time << " s " << endl;
+
+  ofstream outfile;
+  outfile.open("eigendata.dat");
+  outfile << setw(20) << "rhoN"
+          << setw(20) << "l1"
+          << setw(20) << "l2"
+          << setw(20) << "l3"
+          << setw(20) << "l4" << endl;
+
+
+  for (int i=0; i<length; i++) 
+  {
+    outfile << setprecision(7) << setw(20) << vars[0][i]
+            << setprecision(7) << setw(20) << vars[1][i]
+            << setprecision(7) << setw(20) << vars[2][i]
+            << setprecision(7) << setw(20) << vars[3][i]
+            << setprecision(7) << setw(20) << vars[4][i] << endl;
+
+  }
+  outfile.close();
+
+  return 0;
+}
+double rhoN = 5.4;
+double h = (rhoN - rho0) / ((double) n + 1);
 void TEST_JACOBI_ALGORITHM()
 /*
 Compares eigenvalues computed by the Jacobi_Algorithm method
@@ -173,7 +281,7 @@ with armadillo eig_gen method
   arma::eig_gen(eig_val, eig_vec, A);
   
   //Finding eigenvalues with Jacobi algorithm
-  Jacobi_Algorithm(A, E, N);
+  Jacobi_Algorithm(A, E, N, h);
   arma::vec calculated_eig_vals = A.diag();
   assert(arma::norm(arma::sort(A.diag()) - arma::sort(arma::real(eig_val))) <= eps);
 }
@@ -205,7 +313,7 @@ calling Jacobi_Algorithm method.
   A.diag(0).fill(2);
   A.diag(1).fill(-1);
   A.diag(-1).fill(-1);
-  Jacobi_Algorithm(A, E, N);
+  Jacobi_Algorithm(A, E, N, h);
   for (int i = 0; i < N; i++){
     for (int j = 0; j < N; j++){
       if (i != j){
@@ -227,7 +335,7 @@ after calling the Jacobi_Algorithm method.
   A.diag(0).fill(2);
   A.diag(1).fill(-1);
   A.diag(-1).fill(-1);
-  Jacobi_Algorithm(A, E, N);
+  Jacobi_Algorithm(A, E, N, h);
   for (int i = 0; i < N; i++){
     for (int j = 0; j < N; j++){
       if (i != j){
@@ -236,66 +344,3 @@ after calling the Jacobi_Algorithm method.
     }
   }
 }
-
-
-int main()
-{ 
-  TEST_OFFMAX();
-  TEST_JACOBI_ALGORITHM();
-  TEST_OFFDIAG_IS_ZERO();
-  TEST_ORTHOGONALITY();
-  /* 
-  arma::mat A = arma::zeros <arma::mat> (n, n);
-  arma::mat E = arma::eye <arma::mat> (n, n);
-  A.diag(0).fill(d);
-  A.diag(1).fill(a);
-  A.diag(-1).fill(a);
-
-  Jacobi_Algorithm(A, E, n);
-  */
-<<<<<<< HEAD
-  double h;
-  double rhoN;
-  clock_t t_start = clock(); // Initializing timer
-=======
-  
->>>>>>> master
-  arma::vec V = arma::zeros <arma::vec> (n);
-  Harmonic_Potential(V, rho0, h, n);
-  arma::mat P = arma::zeros <arma::mat> (n, n);
-  arma::mat E = arma::eye <arma::mat> (n, n);
-  P.diag(0) += d + V;
-  P.diag(1).fill(a);
-  P.diag(-1).fill(a);
-
-  clock_t t_start = clock(); // Initializing timer
-  Jacobi_Algorithm(P, E, n);
-  clock_t t_end = clock(); // End timer
-  double CPU_time = (t_end - t_start) / CLOCKS_PER_SEC; // Calculating CPU time [ms]
-  arma:: vec diags = arma::sort(P.diag(0));
-  cout << diags(0) << " " << diags(1) << " " 
-       << diags(2) << " " << diags(3) << endl;
-  cout << "Run time: " << CPU_time << " s " << endl;
-<<<<<<< HEAD
-
-  arma:: vec rho_max = linspace<arma::vec>(1 ,20, 100);
-
-  double vars[6][100];
-  
-  for (int i=0; i<100; i++) 
-  {
-    arma::mat P = arma::zeros <arma::mat> (n, n);
-    rhoN = rho_max(i)
-    h = (rhoN - rho0) / ((double) n + 1)
-    P.diag(0) += d + V;
-    P.diag(1).fill(a);
-    P.diag(-1).fill(a);
-    Jacobi_Algorithm(P, n);
-    
-  }
-=======
-  
->>>>>>> master
-  return 0;
-}
-
