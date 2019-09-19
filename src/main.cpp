@@ -10,6 +10,16 @@ using namespace std;
 
 
 double max_offdiag(const arma::mat &A, int &k, int &l, int n)
+/*
+Finds the maximum value in an nxn matrix A
+excluding the diagonal.
+
+Parameters
+------------
+A: An armadillo object nxn matrix
+n: The dimensions of A
+k,l: The indices of the maximum value
+ */
 { 
   
   double max_val = 0.0;
@@ -26,11 +36,22 @@ double max_offdiag(const arma::mat &A, int &k, int &l, int n)
 }
 
 void Jacobi_Algorithm(arma::mat &A, int n)
+/*
+Implements the jacobi algorithm for finding the
+eigenvalues on an nxn matrix
+
+Parameters
+------------
+A: An armadillo object nxn matrix
+n: The dimensions of A
+ */
 {
   int k, l;
   double max_val = max_offdiag(A, k, l, n);
   double a_ll, a_kk, a_ik, a_il, a_kl;
   double t_val, tau, c, s; 
+
+
   while(max_val * max_val > eps)
   {
     a_kl = A(k, l);
@@ -69,6 +90,16 @@ void Jacobi_Algorithm(arma::mat &A, int n)
 }
 
 void Harmonic_Potential(arma::vec &V, double rho0, double h, int n)
+/*
+Computes the harmonic oscillator potential a particle
+
+Parameters
+-----------
+V: An armadillo vector containing the potential
+rho0: The minumum value for the potential
+h: The step length
+n: The length of the vector V
+ */
 { 
   for (int i = 0; i < n; i++)
   {
@@ -77,6 +108,18 @@ void Harmonic_Potential(arma::vec &V, double rho0, double h, int n)
 }
 
 void coulomb_potential(arma::vec &V, double rho0, double h, int n, double omega_r)
+/*
+Computes the coulomb potential for a particle
+
+Parameters
+-----------
+V: An armadillo vector containing the potential
+rho0: The minumum value for the potential
+h: The step length
+n: The length of the vector V
+omega_r: The oscillator frequency reflecting
+         the strength of the potential
+ */
 { 
   double rho;
   for (int i = 0; i < n; i++)
@@ -87,6 +130,10 @@ void coulomb_potential(arma::vec &V, double rho0, double h, int n, double omega_
 }
 
 void TEST_JACOBI_ALGORITHM()
+/*
+Compares eigenvalues computed by the Jacobi_Algorithm method
+with armadillo eig_gen method
+ */
 { 
   int N = 5;
   arma::mat A = arma::zeros <arma::mat> (N, N);
@@ -106,6 +153,10 @@ void TEST_JACOBI_ALGORITHM()
 }
 
 void TEST_OFFMAX()
+/*
+Verifies that max_offdiag method chooses
+the correct maximum value and checks indices
+ */
 { 
   double t = -1e3; //Number with larger fabs than 0
   int N = 5;
@@ -117,6 +168,10 @@ void TEST_OFFMAX()
 }
 
 void TEST_OFFDIAG_IS_ZERO()
+/*
+Verifies that the offdiagonal elements is zero after 
+calling Jacobi_Algorithm method.
+ */
 { 
   int N = 5;
   arma::mat A = arma::zeros <arma::mat> (N, N);
@@ -134,6 +189,10 @@ void TEST_OFFDIAG_IS_ZERO()
 }
 
 void TEST_ORTHOGONALITY()
+/*
+Verifies that the columns in A are orthogonal 
+after calling the Jacobi_Algorithm method.
+ */
 {
   int N = 3;
   arma::mat A = arma::zeros <arma::mat> (N, N);
