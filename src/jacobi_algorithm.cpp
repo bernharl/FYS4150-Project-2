@@ -1,3 +1,15 @@
+#include <armadillo>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <assert.h>
+#include <iomanip>
+#include <ctime>
+#include <cmath>
+#include <stdexcept>
+
+#include "jacobi_algorithm.h"
+
 double max_offdiag(const arma::mat &A, int &k, int &l, int n)
 /*
 Finds the maximum value in an nxn matrix A
