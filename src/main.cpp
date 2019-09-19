@@ -1,4 +1,5 @@
 #include <armadillo>
+#include <fstream>
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
@@ -38,7 +39,7 @@ k,l: int
   return max_val;
 }
 
-void Jacobi_Algorithm(arma::mat &A, int n)
+void Jacobi_Algorithm(arma::mat &A, int n, double h)
 /*
 Implements the jacobi algorithm for finding the
 eigenvalues on an nxn matrix
@@ -49,6 +50,8 @@ A:arma::mat
  An armadillo object nxn matrix
 n: int
  The dimensions of A
+h: double
+  The step size
  */
 {
   int k, l;
@@ -240,6 +243,8 @@ int main()
   Jacobi_Algorithm(A, n);
   cout << A << endl;
   */
+  double h;
+  double rhoN;
   clock_t t_start = clock(); // Initializing timer
   arma::vec V = arma::zeros <arma::vec> (n);
   Harmonic_Potential(V, rho0, h, n);
@@ -255,6 +260,22 @@ int main()
   cout << diags(0) << " " << diags(1) << " " 
        << diags(2) << " " << diags(3) << endl;
   cout << "Run time: " << CPU_time << " s " << endl;
+
+  arma:: vec rho_max = linspace<arma::vec>(1 ,20, 100);
+
+  double vars[6][100];
+  
+  for (int i=0; i<100; i++) 
+  {
+    arma::mat P = arma::zeros <arma::mat> (n, n);
+    rhoN = rho_max(i)
+    h = (rhoN - rho0) / ((double) n + 1)
+    P.diag(0) += d + V;
+    P.diag(1).fill(a);
+    P.diag(-1).fill(a);
+    Jacobi_Algorithm(P, n);
+    
+  }
   return 0;
 }
 
