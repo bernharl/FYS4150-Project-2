@@ -66,7 +66,6 @@ void Jacobi_Algorithm(arma::mat &A, int n)
     }
     max_val = max_offdiag(A, k, l, n);
   }
-    //cout << A << endl;
 }
 
 void Harmonic_Potential(arma::vec &V, double rho0, double h, int n)
@@ -134,11 +133,29 @@ void TEST_OFFDIAG_IS_ZERO()
   }
 }
 
+void TEST_ORTHOGONALITY()
+{
+  int N = 3;
+  arma::mat A = arma::zeros <arma::mat> (N, N);
+  A(2, 0) = 1; A(0, 1) = 1; A(1, 2) = 1;
+  Jacobi_Algorithm(A, N);
+  for (int i = 0; i < N; i++){
+    for (int j = 0; j < N; j++){
+      if (i != j){
+        cout << arma::dot(A.col(i), A.col(j)) << endl; 
+        assert(arma::dot(A.col(i), A.col(j)) <= 1e-5);
+      }
+    }
+  }
+}
+
+
 int main()
 { 
   //TEST_OFFMAX();
   //TEST_JACOBI_ALGORITHM();
   //TEST_OFFDIAG_IS_ZERO();
+  //TEST_ORTHOGONALITY();
   /*
   arma::mat A = arma::zeros <arma::mat> (n, n);
   A.diag(0).fill(d);
