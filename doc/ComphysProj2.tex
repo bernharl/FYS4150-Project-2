@@ -84,11 +84,138 @@ where $a = -\frac{1}{h^2}$ and $d = \frac{2}{h^2}$.
 By this point the problem is reformulated into an eigenvalue problem where the $\lambda$'s are the eigenvalue we want to find. 
 We will later show how to arrive at the classical wave equation on this form by rewriting the Schrödinger equation. Thus by scaling such a differential equation one can develop a powerfull algorithm that can handle a variety of different eigenvalue equations. In the case of the beam we know the analytical solution to the eigenvalues 
 \begin{align}
-	\lambda_i = d + 2a \cos\left(\frac{j\pi}{n+1}\left)\quad j = 1, 2, 3, \ldots n,
+	\lambda_i = d + 2a \cos\left(\frac{j\pi}{n+1}\right)\quad j = 1, 2, 3, \ldots n,
 \end{align}
 enabling a comparison to the numerical result of the solver we present. 
 
-The eigenvalue solver we will show is using the Jacobi algorithm, which is very stable, yet converges quite slowly. The essence of the algorithm is that we can rotate the column space around different axis in the $n$ dimensional space 
+The eigenvalue solver we will show is using the Jacobi algorithm, which converges quite stabely yet very slowly. The essence of the algorithm is that we can rotate the column space of $A$ around different axis in the $n$ dimensional space using similarity transforms to obtain a diagonal matrix $D$ being similar to $A$. Due to the similarity between $D$ and $A$, the diagonal elements $d_ii = \lambda_i$ being the eigenvalues of $D$ are eigenvalues of $A$ too.
+
+The similarity transforms used in the Jacobi algorithm is based on a sequence of orthogonal transforms. In an orthogonal transformation an orthogonal basis $F = \{\vec{v}_i | i = 1, 2, \ldots, n\}$, keeps its orthogonality. Meaning that the basis vectors in the new basis $G = \{\vec{w}_i | i = 1, 2, \ldots, n\}$ where $\vec{w}_i = U\vec{v}_i$ forms a new orthogonal basis for the same space as before the transformation, if $U$ is orthogonal i.e. $UU^T = U^TU = I_n$ giving $U^{-1} = U^T$. Therefore the inner product of basis vectors in $G$ give 
+\begin{align}
+	\vec{w}_i\cdot \vec{w}_j &= w_i^Tw_j = (Uv_i)^T(Uv_j) \\
+	&= v_i^TU^TUv_j = v_i^Tv_j = \delta_{ij},
+\end{align}
+since $v_i^Tv_j = \delta_{ij}$ due to the orthogonality of the basis $F$.
+
+When transforming $A$ into a diagonal matrix $D$ we need to eliminate the off-diagonal elements of $A$. This is done by similarity transform $B$ of $A$ is then written as  
+\begin{align}
+	B = S^T A S,
+\end{align}
+for a rotational matrix 
+\begin{align}
+	\begin{bmatrix}
+		1 & 0 & 0 & 0 & \cdots & 0\\
+		0 & 1 & 0 & 0 & \cdots & 0 \\	
+		\vdots & & \ddots & & & \vdots \\
+		0 & & \cos\theta & \cdots & \sin\theta & 0\\
+		\vdots & & & & & \vdots \\
+		0 & & -\sin\theta & \cdots & \cos\theta & 0\\
+		\vdots & & \ddots & & & \vdots \\
+		0 & 0 & 0 & 0 & 1 & 0\\		
+		0 & 0 & 0 & 0 & 0 & 1
+	\end{bmatrix},
+\end{align}
+rotating the column space basis an angle $\theta$ in the $\rho_k$-$\rho_l$-plane. This is since $S_{kk} = S_{ll} = \cos\theta = c$, $S_{kl} = \sin\theta = s = -S_{lk}$. Since the rotational matrix $S$ is orthogonal, the matrix $B$ is similar to $A$. 
+
+Multiplying out the above similarity transform we get 
+\begin{align}
+	b_{ii} &= a_{ii} , i\neq k, i\neq l\\
+	b_{ik} &= a_{ik}c - a_{il}s, i\neq k, i\neq l\\
+	b_{il} &= a_{il}c + a_{ik}s, i\neq k, i\neq l\\
+	b_{kk} &= a_{kk}c^2 - 2a_{kl}cs + a_{ll}s^2\\
+	b_{ll} &= a_{ll}c^2 + 2a_{kl}cs + a_{kk}s^2\\
+	b_{kl} &= (a_{kk} - a_{ll})cs + a_{kl}(c^2 - s^2).
+	\label{eq:b_kl}
+\end{align}
+Since we want to zero out the off-diagonals of $A$ we require that (\ref{eq:b_kl}) is zeroed out $b_{kl} = b_{lk} = 0$. Defining 
+\begin{align}
+	\cot(2\theta) = \tau = \frac{a_{ll} - a_{kk}}{2a_{kl}}
+\end{align}
+we get a quadratic equation $t^2 + 2\tau t - 1 = 0$, where $t = \tan \theta$, the requirement from $b_{kl} = 0$. From this quadratic equation we get that 
+\begin{align}
+	t &= -\tau \pm \sqrt{1+\tau^2}\\
+	c & = \frac{1}{\sqrt{1+t^2}}\\
+	s &= tc.
+\end{align}
+This way we can fine tune the angle $\theta$ in order to zero out $b_{kl}$ and then find the other elements of $B$.  Unfortunatlly the way $t$ is defined is numerically unstable. If $\tau\gg1$ a computer will let $1+\tau^2 = \tau^2$ resulting in $t = -\tau \pm \tau$ which is of course not correct. Thus by writing $t$ as a fraction, then multiplying both the nominator and denominator by $-\tau\mp\sqrt{1+\tau^2}$, making $t = -\frac{1}{-\tau \pm \sqrt{1 + \tau^2}}$. If we now choose to let $t = \frac{1}{\tau + \sqrt{1 + \tau^2}}$ whenever $\tau>0$ and let $t = -\frac{1}{-\tau + \sqrt{1+\tau^2}}$ when $t<0$. This way we circumvent the problems arrising when subtracting almost equal numbers resulting in division by zero.
+
+Next we consider the Frobenious norm, which is conserved under any similarity transform and given as 
+\begin{align}
+	||A||_F^2 = ||B||_F^2 = \sum_{ij}|a_{ij}|^2 = \sum_{ij}|b_{ij}|^2.
+	\label{eq:frobenius_norm}
+\end{align}
+Since we let $b_{kl} = b_{kl} = 0$ the norm of the off-diagonal elements 
+\begin{align}
+	\text{Off}(A)^2 = \sum_{i\neq j} |a_{ij}^2| > \sum_{i\neq j} |b_{ij}^2| = \text{Off}(B)^2.
+\end{align}
+Consider next for concreteness and without loss of generality a case where $n=2$ giving 
+\begin{align}
+	A = 	
+	\begin{bmatrix}
+		a_{kk} & a_{kl}\\
+		a_{lk} & a_{ll}
+	\end{bmatrix},
+	B = 
+	\begin{bmatrix}
+		b_{kk} & b_{kl}\\
+		b_{lk} & b_{ll}.
+	\end{bmatrix}
+\end{align}
+The from (\ref{eq:frobenius_norm}) we get that 
+\begin{align}
+	a_{kk}^2 + a_{ll}^2 + 2a_{kl}^2 = b_{kk}^2 + b_{ll}^2 + 2b_{kl}^2 = 		b_{kk}^2 + b_{ll}^2.
+	\label{eq:frobenius_norm_n2}
+\end{align} 
+This then gives an off-diagonal norm 
+\begin{align}
+	\text{Off}(B)^2 &= ||B||_F^2 - \sum_i |b_{ii}|^2 \\
+	&= ||A||_F^2 - \text{Off}(A)^2 - \sum_i |b_{ii}|^2 \\
+	&= ||A||_F^2 - 2a_{kl},
+	\label{eq:Off_reduction}
+\end{align}
+meaning that the off-diagonal norm of the transformed matrix $B$ decreases for every similarity transform. Performing multiple similarity transforms on different off-diagonal elements, $i = k, j = l$, we thus gradually transform $A$ into $D$.  
+
+The question is now, which elements should we try to eliminate each time we perform a similarity transform. The answer to this question is easily obtained by looking at (\ref{eq:Off_reduction}); if we choose $a_{kl}$ to be the greatest off-diagonal element of $A$ we reduce $\text{Off}(B)^2$ by the greatest possible value for each iteration. 
+
+The next step is to find a criterion for when to stop repeating the similarity transforms on $A$. Since we want to eliminate off-diagonal elements in $A$, a natural test is to check whether $\text{Off}(A) > \epsilon$, where $\epsilon$ is a tolerance typically set to a small number like $10^{-8}$. However, since calculating $\text(Off)(A)$ is rather time-intensive, we can use an upper limit estimete on $\text(Off)(A)$ instead. Since 
+\begin{align}
+	\text{Off}(A) \geq \max_{i\neq j}(a_{ij}^2) = a_{kl}^2,
+\end{align}
+we can simply choose a tolerance $\epsilon$ so that 
+\begin{align}
+	\text{Off}(A) \geq a_{kl}^2 > \epsilon.
+\end{align}
+The \texttt{while}-loop iterating over the similarity transform thus stops when $\max_{i\neq j}(a_{ij}^2) \leq \epsilon$. After having looped over the similarity transforms the remaining matrix should be diagonal withing the tolerance, making it easy to extract the eigenvalues $\lambda_i$. In case we want to find the eigenvectors corresponding to the eigenvalues found, we simply rotate an arbritrary orthogonal basis for $\mathcal{R}^n$ for each loop iteration using the corresponding rotation $S$. We simply contain the input basis vectors in a matrix $E$, e.g. the identity matrix, and rotate them one rotation by multiplying $SE$. This is also done in the loop so that 
+\begin{align}
+	e_{ik} &= ce_{ik} - se_{il}\\
+	e_{il} &= ce_{il} + se_{ik}.
+\end{align}
+
+This algorithm is called the Jacobi algorithm, enabeling to solve eigenvalue problems for symmetrical matrices. In addition to solving the bulcking beam problem presented earlier we can actually use the Jacobi algorithm to solve quantum mechanical problems. We will here consider how to find the energy eigenvalues of the Hamiltonian operator for an electron in a Harmonic Oscillator potential $V(r)$ in three dimensions. For simplicity we only consider the radial Schrödinger equation 
+\begin{align}
+-\frac{\hbar^2}{2m}\left(\frac{1}{r^2}\dv{r}r^2\dv{r} - \frac{l(l+1)}{r^2}\right)R(r) + V(r)R(r) = E R(r),
+\end{align}
+where $V(r) = \frac{1}{2}kr^2$ with $k = m\omega^2$, and the energies $E$ of the electron in the harmonic oscillator in three dimensions is given as 
+\begin{align}
+	E_{nl} = \hbar\omega\left(2n + l + \frac{3}{2}\right),
+\end{align}
+where $n = 0, 1, 2,\ldots$ and $l = 0, 1, 2, \ldots$. $n$ and $l$ represent the principal and orbital momentum quantum numbers. Since this is a radial equation we let $r\in[0,\infty)$. Next we let $R(r) = \frac{u(r)}{r}$ so that 
+\begin{align}
+	-\frac{\hbar^2}{2m}\dv[2]{r}u(r) + \left(V(r) + \frac{l(l+1)}{r^2}\frac{\hbar^2}{2m}\right)u(r) = Eu(r).
+	\label{eq:u_r}
+\end{align}
+In order to reflect reality we must require $u(0) = u(\infty) = 0$, as the wave function of the electron must fall of to zero when going to infinity. 
+
+Now we want to make our integration variable $r$ dimensionless, enabeling a safer handling on a computer. This is done by letting $\rho = \frac{r}{\alpha}$, where $\alpha$ is a parameter with dimension length. Inserting this into (\ref{eq:u_r}) we obtain
+\begin{align}
+	-\frac{\hbar^2}{2m\alpha^2}\dv[2]{\rho}u(\rho) + \left(V(\rho) + \frac{l(l+1)}{\rho^2}\frac{\hbar^2}{2m\alpha^2}\right)u(\rho) = Eu(\rho).
+\end{align}
+To simplify things further we only consider the case where $l=0$. The dimensionless potensial is then inserted into the equation giving 
+\begin{align}
+	-\frac{\hbar^2}{2m\alpha^2} \dv[2]{\rho} u(\rho) + \frac{k}{2}\alpha^2\rho^2u(\rho) = Eu(\rho)
+\end{align}
+
+
 \section{Results} \label{sec:results}
 
 \section{Discussion} \label{sec:discussion}
