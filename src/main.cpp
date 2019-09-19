@@ -50,10 +50,18 @@ n: The dimensions of A
   double max_val = max_offdiag(A, k, l, n);
   double a_ll, a_kk, a_ik, a_il, a_kl;
   double t_val, tau, c, s; 
+<<<<<<< Updated upstream
 
 
   while(max_val * max_val > eps)
   {
+=======
+  double iterator = 0;
+
+  while(max_val * max_val > eps && iterator <= tot_iterations)
+  { 
+    iterator ++;
+>>>>>>> Stashed changes
     a_kl = A(k, l);
     a_ll = A(l, l);
     a_kk = A(k, k);
@@ -103,7 +111,7 @@ n: The length of the vector V
 { 
   for (int i = 0; i < n; i++)
   {
-    V(i) = (rho0 + i * h) * (rho0 + i * h);
+    V(i) = (rho0 + (i + 1) * h) * (rho0 + (i + 1) * h);
   }
 }
 
@@ -124,7 +132,7 @@ omega_r: The oscillator frequency reflecting
   double rho;
   for (int i = 0; i < n; i++)
   { 
-    rho = rho0 + i * h;
+    rho = rho0 + (i + 1) * h;
     V(i) = omega_r * omega_r * rho * rho + 1 / rho;
   }
 }
@@ -220,7 +228,10 @@ int main()
   A.diag(0).fill(d);
   A.diag(1).fill(a);
   A.diag(-1).fill(a);
+  cout << A << endl;
+
   Jacobi_Algorithm(A, n);
+  cout << A << endl;
   */
   clock_t t_start = clock(); // Initializing timer
   arma::vec V = arma::zeros <arma::vec> (n);
