@@ -16,9 +16,12 @@ excluding the diagonal.
 
 Parameters
 ------------
-A: An armadillo object nxn matrix
-n: The dimensions of A
-k,l: The indices of the maximum value
+A: arma::mat
+  An armadillo object nxn matrix
+n: int
+ The dimensions of A
+k,l: int
+  The indices of the maximum value
  */
 { 
   
@@ -42,26 +45,21 @@ eigenvalues on an nxn matrix
 
 Parameters
 ------------
-A: An armadillo object nxn matrix
-n: The dimensions of A
+A:arma::mat
+ An armadillo object nxn matrix
+n: int
+ The dimensions of A
  */
 {
   int k, l;
   double max_val = max_offdiag(A, k, l, n);
   double a_ll, a_kk, a_ik, a_il, a_kl;
   double t_val, tau, c, s; 
-<<<<<<< Updated upstream
-
-
-  while(max_val * max_val > eps)
-  {
-=======
   double iterator = 0;
 
   while(max_val * max_val > eps && iterator <= tot_iterations)
   { 
     iterator ++;
->>>>>>> Stashed changes
     a_kl = A(k, l);
     a_ll = A(l, l);
     a_kk = A(k, k);
@@ -103,10 +101,14 @@ Computes the harmonic oscillator potential a particle
 
 Parameters
 -----------
-V: An armadillo vector containing the potential
-rho0: The minumum value for the potential
-h: The step length
-n: The length of the vector V
+V: arma::vec
+  An armadillo vector containing the potential
+rho0: double
+ The minumum value for the potential
+h: double
+ The step length
+n: int
+ The length of the vector V
  */
 { 
   for (int i = 0; i < n; i++)
@@ -121,11 +123,16 @@ Computes the coulomb potential for a particle
 
 Parameters
 -----------
-V: An armadillo vector containing the potential
-rho0: The minumum value for the potential
-h: The step length
-n: The length of the vector V
-omega_r: The oscillator frequency reflecting
+V: arma::vec
+  An armadillo vector containing the potential
+rho0: double
+  The minumum value for the potential
+h: double
+  The step length
+n: int 
+  The length of the vector V
+omega_r: double
+ The oscillator frequency reflecting
          the strength of the potential
  */
 { 
