@@ -2,13 +2,16 @@
 #include <iostream>
 #include <stdio.h>
 #include <assert.h>
+#include <ctime>
+#include <cmath>
 
 #include "keyword_parameters.h"
 using namespace std;
 
 
 double max_offdiag(const arma::mat &A, int &k, int &l, int n)
-{
+{ 
+  
   double max_val = 0.0;
   for (int i = 0; i < n; i++){
     for (int j = 0; j < n; j++){
@@ -22,16 +25,12 @@ double max_offdiag(const arma::mat &A, int &k, int &l, int n)
   return max_val;
 }
 
-void Jacobi_Algorithm(arma::mat &A)
+void Jacobi_Algorithm(arma::mat &A, int n)
 {
-
-  arma::mat B;
   int k, l;
-
   double max_val = max_offdiag(A, k, l, n);
   double a_ll, a_kk, a_ik, a_il, a_kl;
   double t_val, tau, c, s; 
-
   while(max_val * max_val > eps)
   {
     a_kl = A(k, l);
@@ -67,13 +66,30 @@ void Jacobi_Algorithm(arma::mat &A)
     }
     max_val = max_offdiag(A, k, l, n);
   }
-    //cout << A << endl;
 }
 
+void Harmonic_Potential(arma::vec &V, double rho0, double h, int n)
+{ 
+  for (int i = 0; i < n; i++)
+  {
+    V(i) = (rho0 + i * h) * (rho0 + i * h);
+  }
+}
+
+void coulomb_potential(arma::vec &V, double rho0, double h, int n, double omega_r)
+{ 
+  double rho;
+  for (int i = 0; i < n; i++)
+  { 
+    rho = rho0 + i * h;
+    V(i) = omega_r * omega_r * rho * rho + 1 / rho;
+  }
+}
 
 void TEST_JACOBI_ALGORITHM()
 { 
-  arma::mat A = arma::zeros <arma::mat> (5, 5);
+  int N = 5;
+  arma::mat A = arma::zeros <arma::mat> (N, N);
   A.diag(0).fill(2);
   A.diag(1).fill(-1);
   A.diag(-1).fill(-1);
@@ -84,49 +100,84 @@ void TEST_JACOBI_ALGORITHM()
   arma::eig_gen(eig_val, eig_vec, A);
   
   //Finding eigenvalues with Jacobi algorithm
-  Jacobi_Algorithm(A);
+  Jacobi_Algorithm(A, N);
   arma::vec calculated_eig_vals = A.diag();
-  assert(norm(sort(A.diag()) - sort(real(eig_val))) <= eps);
+  assert(arma::norm(arma::sort(A.diag()) - arma::sort(arma::real(eig_val))) <= eps);
 }
 
 void TEST_OFFMAX()
 { 
   double t = -1e3; //Number with larger fabs than 0
-  int n = 5;
+  int N = 5;
   int k, l;
-  arma::mat T = arma::zeros <arma::mat> (5, 5); //Making matrix of zeros
+  arma::mat T = arma::zeros <arma::mat> (N, N); //Making matrix of zeros
   T(2, 1)     = t; // Setting one element to high value
-  double max_val = max_offdiag(T, k, l, n);
-  assert(max_val == fabs(t) && k == 2 && l == 1);
+  double max_val = max_offdiag(T, k, l, N);
+  assert(k == 2 && l == 1 && max_val == fabs(t) );
 }
 
 void TEST_OFFDIAG_IS_ZERO()
-{
-  arma::mat A = arma::zeros <arma::mat> (5, 5);
+{ 
+  int N = 5;
+  arma::mat A = arma::zeros <arma::mat> (N, N);
   A.diag(0).fill(2);
   A.diag(1).fill(-1);
   A.diag(-1).fill(-1);
-  Jacobi_Algorithm(A);
-  for (int i = 0; i < n; i++){
-    for (int j = 0; j < n; j++){
+  Jacobi_Algorithm(A, N);
+  for (int i = 0; i < N; i++){
+    for (int j = 0; j < N; j++){
       if (i != j){
         assert(fabs(A(i, j) * A(i, j)) <= eps);
       }
     }
   }
-
 }
+
+void TEST_ORTHOGONALITY()
+{
+  int N = 3;
+  arma::mat A = arma::zeros <arma::mat> (N, N);
+  A(2, 0) = 1; A(0, 1) = 1; A(1, 2) = 1;
+  Jacobi_Algorithm(A, N);
+  for (int i = 0; i < N; i++){
+    for (int j = 0; j < N; j++){
+      if (i != j){
+        cout << arma::dot(A.col(i), A.col(j)) << endl; 
+        assert(arma::dot(A.col(i), A.col(j)) <= 1e-5);
+      }
+    }
+  }
+}
+
 
 int main()
 { 
-  TEST_OFFMAX();
-  TEST_JACOBI_ALGORITHM();
-  TEST_OFFDIAG_IS_ZERO();
+  //TEST_OFFMAX();
+  //TEST_JACOBI_ALGORITHM();
+  //TEST_OFFDIAG_IS_ZERO();
+  //TEST_ORTHOGONALITY();
+  /*
   arma::mat A = arma::zeros <arma::mat> (n, n);
   A.diag(0).fill(d);
   A.diag(1).fill(a);
   A.diag(-1).fill(a);
-  Jacobi_Algorithm(A);
+  Jacobi_Algorithm(A, n);
+  */
+  clock_t t_start = clock(); // Initializing timer
+  arma::vec V = arma::zeros <arma::vec> (n);
+  Harmonic_Potential(V, rho0, h, n);
+  arma::mat P = arma::zeros <arma::mat> (n, n);
+  P.diag(0) += d + V;
+  P.diag(1).fill(a);
+  P.diag(-1).fill(a);
+  //cout << P << endl;
+  Jacobi_Algorithm(P, n);
+  clock_t t_end = clock(); // End timer
+  double CPU_time = (t_end - t_start) / CLOCKS_PER_SEC; // Calculating CPU time [ms]
+  arma:: vec diags = arma::sort(P.diag(0));
+  cout << diags(0) << " " << diags(1) << " " 
+       << diags(2) << " " << diags(3) << endl;
+  cout << "Run time: " << CPU_time << " s " << endl;
   return 0;
 }
 
