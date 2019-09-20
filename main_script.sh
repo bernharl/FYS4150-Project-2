@@ -10,7 +10,7 @@ then
 fi
 
 
-echo "Generate new data before plotting? (y/n)"
+echo "Generate new data? (y/n)"
 read yn
 if [ "$yn" == "y" ] # If y, compile and run both c++ codes with O3 optimization
 then
@@ -21,4 +21,12 @@ then
   echo "Please provide RhoN"
   read rhoN
   ./mainprog.out $dim $tol $rhoN
+fi
+
+echo "Generate plots? (y/n)"
+read ynplot
+if [ "$ynplot" == "y" ] # If y, compile and run both c++ codes with O3 optimization
+then
+  python3 plot_infinity.py
+  python3 plot_states.py
 fi
