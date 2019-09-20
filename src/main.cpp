@@ -127,13 +127,14 @@ int main(int argc, char* argv[])
   */
   length = 10;
   omega_r = 1./4;
-  arma:: vec omega_lin = arma::linspace<arma::vec>(0.01 , 5, );
+  //arma:: vec omega_lin = arma::linspace<arma::vec>(0.01 , 5, );
   double omega_lin[6] = {0.01, 0.05, 0.25, 0.5, 1, 5};
   arma::mat P_col = arma::zeros <arma::mat> (n, n);
   arma::vec V_col = arma::zeros <arma::vec> (n);
   arma::mat E_col = arma::eye <arma::mat> (n, n);
   arma::vec energy_diag = arma::zeros <arma::vec> (n);
-  
+  arma::mat ground_states = arma::zeros <arma::mat> (n, 6);
+
   for (int i = 0; i < 6; i++)
   {
     coulomb_potential(V_col, rho0, h, n, omega_lin[i]);
@@ -142,8 +143,12 @@ int main(int argc, char* argv[])
     P_col.diag(-1).fill(a);
     Jacobi_Algorithm(P_col, E_col, n, h, eps);
     energy_diag = arma::sort(P_col.diag(0));
+    ground_states.col(i) = E_col.col(0);
     cout << omega_lin[i] << " " << energy_diag(0) << endl;
     P_col.fill(0);
+    E_col.fill(0);
+    E_col.diag(0).fill(1);
   }
+  ground_states.save("ground_states.txt", arma::arma_ascii);
   return 0;
 }
