@@ -7,8 +7,8 @@ MAINPROG= mainprog
 
 all:	${TESTPROG} ${MAINPROG}
 
-${TESTPROG} :	   	tests-main.o  test-functions.o jacobi_algorithm.o
-			${CPPflags} tests-main.o test-functions.o jacobi_algorithm.o ${LIB} -o ${TESTPROG}
+${TESTPROG} :	   		tests-main.o  test-functions.o jacobi_algorithm.o
+					${CPPflags} tests-main.o test-functions.o jacobi_algorithm.o ${LIB} -o ${TESTPROG}
 
 tests-main.o :			tests-main.cpp 
 		        	${CPPflags} -c tests-main.cpp

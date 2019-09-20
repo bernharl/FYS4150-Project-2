@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     eps = atof(argv[2]);
     rhoN = atof(argv[3]);
   }
-
+  double omega_r;
   double h;
   double d;
   double a;
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
   h = (rhoN - rho0) / ((double) n + 1);
   d = 2. / (h * h);
   a = -1. / (h * h);
-
+  /*
   arma::mat A = arma::zeros <arma::mat> (n, n);
   arma::mat E = arma::eye <arma::mat> (n, n);
   A.diag(0).fill(d);
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
   arma:: vec diags = arma::sort(P.diag(0));
   //cout << diags(0) << " " << diags(1) << " " 
   //     << diags(2) << " " << diags(3) << endl;
-
+  */
 
 
   int length = 100;
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
   double vars[5][length];
 
   clock_t t_start = clock(); // Initializing timer
-
+  /*
   double progress = 0;
   //#pragma omp parallel for
   for (int i=0; i<length; i++) 
@@ -89,6 +89,7 @@ int main(int argc, char* argv[])
     P.diag(1).fill(a);
     P.diag(-1).fill(a);
     Jacobi_Algorithm(P, E, n, h, eps);
+
 
     arma:: vec diags = arma::sort(P.diag(0));
 
@@ -123,6 +124,26 @@ int main(int argc, char* argv[])
 
   }
   outfile.close();
-
+  */
+  length = 10;
+  omega_r = 1./4;
+  arma:: vec omega_lin = arma::linspace<arma::vec>(0.01 , 5, );
+  double omega_lin[6] = {0.01, 0.05, 0.25, 0.5, 1, 5};
+  arma::mat P_col = arma::zeros <arma::mat> (n, n);
+  arma::vec V_col = arma::zeros <arma::vec> (n);
+  arma::mat E_col = arma::eye <arma::mat> (n, n);
+  arma::vec energy_diag = arma::zeros <arma::vec> (n);
+  
+  for (int i = 0; i < 6; i++)
+  {
+    coulomb_potential(V_col, rho0, h, n, omega_lin[i]);
+    P_col.diag(0) += d + V_col;
+    P_col.diag(1).fill(a);
+    P_col.diag(-1).fill(a);
+    Jacobi_Algorithm(P_col, E_col, n, h, eps);
+    energy_diag = arma::sort(P_col.diag(0));
+    cout << omega_lin[i] << " " << energy_diag(0) << endl;
+    P_col.fill(0);
+  }
   return 0;
 }
