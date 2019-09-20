@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "jacobi_algorithm.cpp"
+
 using namespace std;
 
 
@@ -21,7 +22,7 @@ int main(int argc, char* argv[])
   double rhoN;
 
   if( argc != 4 ){
-    throw invalid_argument("Program takes two variables only through command line. Please insert dimension n and toleranse epsilon and rhoN.");
+    throw invalid_argument("Program takes three variables only through command line. Please insert dimension n, toleranse epsilon and rhoN.");
   }
   else{
     n = atoi(argv[1]);
@@ -64,8 +65,8 @@ int main(int argc, char* argv[])
 
 
 
-  int length = 5;
-  arma:: vec rho_max = arma::linspace<arma::vec>(1 ,20, length);
+  int length = 100;
+  arma:: vec rho_max = arma::linspace<arma::vec>(1 ,10, length);
 
   double vars[5][length];
 
