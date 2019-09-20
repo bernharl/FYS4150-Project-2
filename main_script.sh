@@ -1,7 +1,16 @@
 #!/bin/bash
-
 cd src
-echo "Generate new data before plotting? (y/n)"
+
+make
+echo "Run tests? (y/n)"
+read yntest
+if [ "$yntest" == "y" ] # If y, compile and run both c++ codes with O3 optimization
+then
+  ./testcode.out
+fi
+
+
+echo "Generate new data? (y/n)"
 read yn
 if [ "$yn" == "y" ] # If y, compile and run both c++ codes with O3 optimization
 then
@@ -11,6 +20,13 @@ then
   read tol
   echo "Please provide RhoN"
   read rhoN
-  make
   ./mainprog.out $dim $tol $rhoN
+fi
+
+echo "Generate plots? (y/n)"
+read ynplot
+if [ "$ynplot" == "y" ] # If y, compile and run both c++ codes with O3 optimization
+then
+  python3 plot_infinity.py
+  python3 plot_states.py
 fi
