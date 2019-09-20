@@ -55,7 +55,7 @@ where we define $\lambda = \frac{FL^2}{\gamma}$. In order to solve (\ref{eq:wave
 \begin{align}
 	\dv[2]{u}{x} = \frac{u(\rho + h) - 2u(\rho) + u(\rho - h)}{h^2} + \mathcal{O}(h^2),
 \end{align}
-for a step length $h = \frac{\rho_n - \rho_0}{n}$, where $\rho_0 = \rho_\text{min} = 0$ and $\rho_n = rho_\text{max} = 1$ are the boundaries and $n$ is the grid size. Thus the dimensionless distance $\rho$ is discretized as
+for a step length $h = \frac{\rho_n - \rho_0}{n}$, where $\rho_0 = \rho_\text{min} = 0$ and $\rho_n = \rho_\text{max} = 1$ are the boundaries and $n$ is the grid size. Thus the dimensionless distance $\rho$ is discretized as
 \begin{align}
 	\rho\to\rho_i = \rho_0 + ih,
 \end{align}
@@ -67,6 +67,7 @@ where $i = 0, 1, 2, 3, \ldots n-1$. Inserting this into the differential equatio
 where $u_i$ denotes $u(\rho_i)$. This can easily be fomulated as a matrix equation 
 \begin{align}
 	A\vec{u} = \lambda\vec{u},
+	\label{eq:matrix_eq}
 \end{align}
 by introducing the vector $\vec{u}^T = [u_1, u_2, \ldots, u_{n-1}]$ and the matrix
 \begin{align}
@@ -103,6 +104,7 @@ When transforming $A$ into a diagonal matrix $D$ we need to eliminate the off-di
 \end{align}
 for a rotational matrix 
 \begin{align}
+S = 
 	\begin{bmatrix}
 		1 & 0 & 0 & 0 & \cdots & 0\\
 		0 & 1 & 0 & 0 & \cdots & 0 \\	
@@ -216,7 +218,7 @@ To simplify things further we only consider the case where $l=0$. The dimensionl
 \end{align}
 which we can rewrite as 
 \begin{align}
-	-\dv[2]{\rho} u(\rho) + \frac{mk}{hbar^2}\alpha^4\rho^2u(\rho) = \frac{2m\alpha^2}{\hbar^2}Eu(\rho).
+	-\dv[2]{\rho} u(\rho) + \frac{mk}{\hbar^2}\alpha^4\rho^2u(\rho) = \frac{2m\alpha^2}{\hbar^2}Eu(\rho).
 \end{align}
 Because we can choose whatever natural length scale we find convinient, we choose to let 
 \begin{align}
@@ -235,12 +237,65 @@ The energy eigenvalues are then defined as
 The Schrödinger equation is now on a dimensionless form 
 \begin{align}
 	-\dv[2]{\rho}u(\rho) + \rho^2u(\rho) = \lambda u(\rho).
+	\label{eq:schrodinger_dimless}
 \end{align}
 
 In order to solve for the eigenvaules, similar to the way we did for the bulcking problem, we introduce the discretisation
 \begin{align}
-	-\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2}
+	&-\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + \rho_i^2 u_i \\
+	&= -\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + v_iu_i = \lambda u_i, 
 \end{align}
+letting $V_i = \rho_i^2$. The step size $h$ has the same form as shown earlier only for a different $\rho_n$. Since we need the wave function $u(\rho)$ to tent to zero at infinity, $\rho\to \infty$, we must set $\rho_{max} =\rho_n= \infty$. However, using a comuter to solve this eigenvalue problem it is impossible to let $\rho_{max} = \infty$, meaning we need to find a suitably large number to approximate infinity. The approximation of infinity will also be dependent on the matrix size, meaning we have to balance our choiced for the parameter $\rho_{max}$ and $n$ in order to acheive the wanted precision in the eigenvalues. Now, from this discritesiation we can write the equation on the same matrix form as (\ref{eq:matrix_eq}), only this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ and similarly the secondary diagonals $e_i = -\frac{1}{h^2}$.
+Having the quamtum mechanical problem on matrix form we can use Jacobi's algorithm to solve it, and then compare the numerical eigenvalues to the analytical solutions $\lambda = 3, 7, 11, 15, \ldots$.
+
+Another problem from quantum mechanics worth considering is the Coulomb interaction between two electrons in a harmonic oscillator potential, in three dimensions, as this has an analytical solution we can use as comparison. First consider the Schrödinger equation for a single electron 
+\begin{align}
+	-\frac{\hbar^2}{2m}\dv[2]{r}u(\rho) + \frac{1}{2}kr^2u(r) = E^{(1)}u(r),
+\end{align}
+where $E^{(1)}$ denotes the energies of one electron. Next, adding another electron, we need to introduce the Coulomb interaction too, giving the Schrödinger equation 
+\begin{align}
+	&\left(-\frac{\hbar^2}{2m}\dv[2]{r_1} -\frac{\hbar^2}{2m}\dv[2]{r_2} + \frac{1}{2}kr_1^2 + \frac{1}{2}kr_2^2 + \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}\right)\nonumber\\
+	&\cdot u(r_1,r_2)= E^{(2)}u(r_1,r_2).
+\end{align}
+Here the Coulomb potential $V_{coul} = \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}$ for $\beta e^2 = 1.44$ eVnm, the energy of the twoelectrons system is $E^{(1)}$ and the positions of the electrons are given as $r_1$ and $r_2$. 
+
+The next step is to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the centre-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ enabeling to write the Schrödinger equation as
+\begin{align}
+&\left(-\frac{\hbar^2}{m}\dv[2]{r} -\frac{\hbar^2}{4m}\dv[2]{R} + \frac{1}{4}kr^2 + kR^2 + \frac{\beta e^2}{r}\right)\nonumber\\
+	&\cdot u(r,R)= E^{(2)}u(r,R).
+\end{align}
+Since the relative distance and the centre-of-mass are to independent degrees of freedom, we can use seperation of variables $u(r) = \psi(r)\phi(R)$ to isolate the Schrödinger equation for the relative distance. Since the centre-of-mass equation is just a regular harmonic oscillator potential, similar to the one we solved earlier, we neglect it from here on. The energy of the two-electron system can then be seperated too, as $E^{(2)} = E_r + E_R$, where $E_r$ is the energy of the relative distance equation and $E_R$ is the harmonic oscillator energy of the centre-of-mass frame. The Schrödinger equation for the relative distance 
+\begin{align}
+	\left(-\frac{\hbar^2}{m}\dv[2]{r} + \frac{1}{4}kr^2 + \frac{\beta e^2}{r}\right)\psi(r) = E_r\psi(r),
+\end{align}
+can similarly to the single-eectrone case, be made dimensionless by inroducing and itroducing the dimensionless variable $\rho = r/\alpha$. This then gives the equation
+\begin{align}
+-\dv[2]{\rho}\psi(\rho) + \frac{1}{4}\frac{mk}{\hbar^2}\alpha^4\rho^2\psi(\rho) + \frac{m\alpha\beta e^2}{\rho\hbar^2}\psi(\rho) = \frac{m\alpha^2}{\hbar^2}E_r\psi(\rho).
+\end{align}
+In order to write it on a similar form to (\ref{eq:schrodinger_dimless}) we define the frequency 
+\begin{align}
+\omega_r^2 = \frac{1}{4}\frac{mk}{\hbar^2}\alpha^4,
+\end{align}
+where we require 
+\begin{align}
+\frac{m\alpha\beta e^2}{\hbar^2} = 1
+\end{align}
+introducing a new natural lengths scale 
+
+\begin{align}
+\alpha = \frac{\hbar^2}{m\beta e^2}.
+\end{align}
+Finally we let the energy eigenvalues be rewritten on a dimensionless form 
+\begin{align}
+	\lambda = \frac{m\alpha^2}{\hbar^2}E,
+\end{align}
+resulting in the final form of the Schrödinger equation 
+\begin{align}
+-\dv[2]{\rho}\psi(\rho) + \omega_r^2\rho^2\psi(\rho) + \frac{1}{\rho} = \lambda\psi(\rho).
+\end{align}
+The frequency $\omega_r$ is a parameter directly linked to the strength of the harmonic oscillator potential. The discetisation and reformulation as a matrix problem in this case is done completely analogous to the previously shown examples, this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ for $V_i = \omega_r^2\rho^2 + \frac{1}{\rho}$.
+
+Also in this case we are only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$. 
 \section{Results} \label{sec:results}
 
 \section{Discussion} \label{sec:discussion}
@@ -250,6 +305,6 @@ In order to solve for the eigenvaules, similar to the way we did for the bulckin
 \
 \begin{thebibliography}{}
 \end{thebibliography}
-\end{document}
 
+\end{document}
 % End of file `sample62.tex'.
