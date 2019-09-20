@@ -2,8 +2,8 @@ CPPflags= c++ -O3
 
 LIB = -larmadillo
 
-TESTPROG= testcode
-MAINPROG= mainprog
+TESTPROG= testcode.out
+MAINPROG= mainprog.out
 
 all:	${TESTPROG} ${MAINPROG}
 

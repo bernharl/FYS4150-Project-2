@@ -21,10 +21,10 @@ int main(int argc, char* argv[])
   double eps;
   double rhoN;
 
-  if( argc != 4 ){
+  if( argc != 4 ) {
     throw invalid_argument("Program takes three variables only through command line. Please insert dimension n, toleranse epsilon and rhoN.");
   }
-  else{
+  else {
     n = atoi(argv[1]);
     eps = atof(argv[2]);
     rhoN = atof(argv[3]);
@@ -134,7 +134,8 @@ int main(int argc, char* argv[])
   arma::mat E_col = arma::eye <arma::mat> (n, n);
   arma::vec energy_diag = arma::zeros <arma::vec> (n);
   arma::mat ground_states = arma::zeros <arma::mat> (n, 6);
-
+  arma::mat lambdas = arma::zeros <arma::mat> (n, 6);
+  arma::uword min_pos;
   for (int i = 0; i < 6; i++)
   {
     coulomb_potential(V_col, rho0, h, n, omega_lin[i]);
@@ -143,12 +144,15 @@ int main(int argc, char* argv[])
     P_col.diag(-1).fill(a);
     Jacobi_Algorithm(P_col, E_col, n, h, eps);
     energy_diag = arma::sort(P_col.diag(0));
-    ground_states.col(i) = E_col.col(0);
+    min_pos = P_col.diag(0).index_min();
+    ground_states.col(i) = E_col.col(min_pos);
+    lambdas.col(i) = P_col.diag(0);
     cout << omega_lin[i] << " " << energy_diag(0) << endl;
     P_col.fill(0);
     E_col.fill(0);
     E_col.diag(0).fill(1);
   }
   ground_states.save("ground_states.txt", arma::arma_ascii);
+  lambdas.save("lambdas.txt", arma::arma_ascii);
   return 0;
 }
