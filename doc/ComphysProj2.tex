@@ -214,8 +214,33 @@ To simplify things further we only consider the case where $l=0$. The dimensionl
 \begin{align}
 	-\frac{\hbar^2}{2m\alpha^2} \dv[2]{\rho} u(\rho) + \frac{k}{2}\alpha^2\rho^2u(\rho) = Eu(\rho)
 \end{align}
+which we can rewrite as 
+\begin{align}
+	-\dv[2]{\rho} u(\rho) + \frac{mk}{hbar^2}\alpha^4\rho^2u(\rho) = \frac{2m\alpha^2}{\hbar^2}Eu(\rho).
+\end{align}
+Because we can choose whatever natural length scale we find convinient, we choose to let 
+\begin{align}
+	\frac{mk}{\hbar^2}\alpha^4 = 1,
+\end{align}
+making the constant 
+\begin{align}
+	\alpha = \left(\frac{\hbar^2}{mk}\right)^{1/4},
+\end{align}
+being set by the mass of the electron $m$ and the strength potential $k$ and we have let the frequency $\omega = 1$ for simplicity sake.
+The energy eigenvalues are then defined as 
+\begin{align}
+	\lambda = \frac{2m\alpha^2}{\hbar^2}E.
+\end{align}
 
+The Schrödinger equation is now on a dimensionless form 
+\begin{align}
+	-\dv[2]{\rho}u(\rho) + \rho^2u(\rho) = \lambda u(\rho).
+\end{align}
 
+In order to solve for the eigenvaules, similar to the way we did for the bulcking problem, we introduce the discretisation
+\begin{align}
+	-\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2}
+\end{align}
 \section{Results} \label{sec:results}
 
 \section{Discussion} \label{sec:discussion}
