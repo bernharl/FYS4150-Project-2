@@ -154,5 +154,15 @@ int main(int argc, char* argv[])
   }
   ground_states.save("ground_states.txt", arma::arma_ascii);
   lambdas.save("lambdas.txt", arma::arma_ascii);
+
+  ofstream outfile;
+  outfile.open("omegas.txt");
+  outfile << rhoN << endl;
+  for (int i = 0; i < 6; i++)
+  {
+    outfile << omega_lin[i] << " ";
+  }
+  outfile << endl;
+  outfile.close();
   return 0;
 }
