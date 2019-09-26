@@ -24,7 +24,7 @@ n = len(eigenvecs[:,0])
 h = rhoN / (1 + len(eigenvecs[:,0]))
 rho = np.linspace(h, n*h, len(eigenvecs[:,0]))
 # Making labels with flashy method
-labels = [rf"$\omega=${i}" for i in omega_r]
+labels = [rf"$\omega_r=${i}" for i in omega_r]
 fig, ax = plt.subplots()
 # Setting figsize to fit Aastex report perfectly (All decimals needed!!)
 fig.set_size_inches(2 * 2.9, 2 * 1.81134774961)

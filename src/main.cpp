@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
            << setw(20) << "lambda2"
            << setw(20) << "lambda3" << endl;
 
-  for (int i = 50; i <= 400; i += 5 )
+  for (int i = 3; i <= 300; i += 1 )
   {
     iterations = 0;
     h = (rhoN - rho0) / ((double) i + 1);
