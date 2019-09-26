@@ -31,12 +31,13 @@
 \end{abstract}
 
 \section{Introduction} \label{sec:intro}
-When solving physical and mathematical problems using methods from linear algebra, a reoccouring problem is to find eigenvalues of a matrix or opperator. Since a wide variety of problems can be solved by setting up and solving eigenvalue equations it is, essential to develop efficient methods for finding eigenvalues. 
+When solving physical and mathematical problems, a reoccouring problem is to find eigenvalues of a matrix or an opperator. Since a wide variety of problems can be solved by setting up and solving eigenvalue equations it is, essential to develop efficient methods for finding eigenvalues. 
 
-In this problem we will develop an eigenvalue solver using a classical example of an eigenvalue problem; the Schrödinger equation for a single electron in an harmonic oscillator potential and the Coulomb interaction between two electrons. The Schrödinger equation can be scaled in such a way that the resulting equation can also be used for a lot of other problems, not just problems from quantum mechanics. The eigenvalues of the Hamiltonian operator is then found by discretizing the equation, then finding the the eigenvalues using a Jacobi algorithm (KILDE).
+In this paper we will show how an eigenvalue solver implementing Jacobi's algorithm can be used to solve problems like the eigenmodes of the classical wave equation and the eigenenergies of the Schrödinger equation for one or two electron in a harmonic oscillator potential. Both problems can be rescaled in such a way that the resulting equations are on a dimensionless form, then being on a generalized form also representative for a variety of different eigenvalue problems from several different fields of science. We will explore how the numerical and analytical eigenvalues of the problems illustrated compare and how the run time of the Jacobi algorithm behaves when changing the grid size.   
 
 \section{Method} \label{sec:method}
-Before attacking the quantum mechanical problem directely we will first consider the classical wave equation for a bulcking beam in one dimension
+\subsection{Classical Wave - The Buckling Beam Problem}
+The first example of an eigenvalue problem we show is the classical wave equation for a buckeling beam in one dimension
 \begin{align}
 	\gamma\dv[2]{u(x)}{x} = -F(x)u(x).
 	\label{eq:beam_wave}
@@ -89,6 +90,7 @@ We will later show how to arrive at the classical wave equation on this form by 
 \end{align}
 enabling a comparison to the numerical result of the solver we present. 
 
+\subsection{Eigenvalue Solver - Jacobi's Algorithm}
 The eigenvalue solver we will show is using the Jacobi algorithm, which converges quite stabely yet very slowly. The essence of the algorithm is that we can rotate the column space of $A$ around different axis in the $n$ dimensional space using similarity transforms to obtain a diagonal matrix $D$ being similar to $A$. Due to the similarity between $D$ and $A$, the diagonal elements $d_ii = \lambda_i$ being the eigenvalues of $D$ are eigenvalues of $A$ too.
 
 The similarity transforms used in the Jacobi algorithm is based on a sequence of orthogonal transforms. In an orthogonal transformation an orthogonal basis $F = \{\vec{v}_i | i = 1, 2, \ldots, n\}$, keeps its orthogonality. Meaning that the basis vectors in the new basis $G = \{\vec{w}_i | i = 1, 2, \ldots, n\}$ where $\vec{w}_i = U\vec{v}_i$ forms a new orthogonal basis for the same space as before the transformation, if $U$ is orthogonal i.e. $UU^T = U^TU = I_n$ giving $U^{-1} = U^T$. Therefore the inner product of basis vectors in $G$ give 
@@ -179,7 +181,7 @@ meaning that the off-diagonal norm of the transformed matrix $B$ decreases for e
 
 The question is now, which elements should we try to eliminate each time we perform a similarity transform. The answer to this question is easily obtained by looking at (\ref{eq:Off_reduction}); if we choose $a_{kl}$ to be the greatest off-diagonal element of $A$ we reduce $\text{Off}(B)^2$ by the greatest possible value for each iteration. 
 
-The next step is to find a criterion for when to stop repeating the similarity transforms on $A$. Since we want to eliminate off-diagonal elements in $A$, a natural test is to check whether $\text{Off}(A) > \epsilon$, where $\epsilon$ is a tolerance typically set to a small number like $10^{-8}$. However, since calculating $\text(Off)(A)$ is rather time-intensive, we can use an upper limit estimete on $\text(Off)(A)$ instead. Since 
+The next step is to find a criterion for when to stop repeating the similarity transforms on $A$. Since we want to eliminate off-diagonal elements in $A$, a natural test is to check whether $\text{Off}(A) > \epsilon$, where $\epsilon$ is a tolerance typically set to a small number like $10^{-8}$. However, since calculating $\text{Off}(A)$ is rather time-intensive, we can use an upper limit estimete on $\text{Off}(A)$ instead. Since 
 \begin{align}
 	\text{Off}(A) \geq \max_{i\neq j}(a_{ij}^2) = a_{kl}^2,
 \end{align}
@@ -193,7 +195,10 @@ The \texttt{while}-loop iterating over the similarity transform thus stops when 
 	e_{il} &= ce_{il} + se_{ik}.
 \end{align}
 
-This algorithm is called the Jacobi algorithm, enabeling to solve eigenvalue problems for symmetrical matrices. In addition to solving the bulcking beam problem presented earlier we can actually use the Jacobi algorithm to solve quantum mechanical problems. We will here consider how to find the energy eigenvalues of the Hamiltonian operator for an electron in a Harmonic Oscillator potential $V(r)$ in three dimensions. For simplicity we only consider the radial Schrödinger equation 
+The Jacobi algorithm can now be used to solve eigenvalue problems for symmetrical matrices like the buckeling beam wave or quantum mechanical problems as shown in the following subsection. 
+
+\subsection{Schrödinger's Equation - One Electron in a Harmonic Oscillator potential}
+As mentioned earlier we can actually use the Jacobi algorithm to solve quantum mechanical problems. We will here consider how to find the energy eigenvalues of the Hamiltonian operator for an electron in a Harmonic Oscillator potential $V(r)$ in three dimensions. For simplicity we only consider the radial Schrödinger equation 
 \begin{align}
 -\frac{\hbar^2}{2m}\left(\frac{1}{r^2}\dv{r}r^2\dv{r} - \frac{l(l+1)}{r^2}\right)R(r) + V(r)R(r) = E R(r),
 \end{align}
@@ -240,7 +245,7 @@ The Schrödinger equation is now on a dimensionless form
 	\label{eq:schrodinger_dimless}
 \end{align}
 
-In order to solve for the eigenvaules, similar to the way we did for the bulcking problem, we introduce the discretisation
+In order to solve for the eigenvaules, similar to the way we did for the buckeling problem, we introduce the discretisation
 \begin{align}
 	&-\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + \rho_i^2 u_i \\
 	&= -\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + v_iu_i = \lambda u_i, 
@@ -248,27 +253,56 @@ In order to solve for the eigenvaules, similar to the way we did for the bulckin
 letting $V_i = \rho_i^2$. The step size $h$ has the same form as shown earlier only for a different $\rho_n$. Since we need the wave function $u(\rho)$ to tent to zero at infinity, $\rho\to \infty$, we must set $\rho_{max} =\rho_n= \infty$. However, using a comuter to solve this eigenvalue problem it is impossible to let $\rho_{max} = \infty$, meaning we need to find a suitably large number to approximate infinity. The approximation of infinity will also be dependent on the matrix size, meaning we have to balance our choiced for the parameter $\rho_{max}$ and $n$ in order to acheive the wanted precision in the eigenvalues. Now, from this discritesiation we can write the equation on the same matrix form as (\ref{eq:matrix_eq}), only this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ and similarly the secondary diagonals $e_i = -\frac{1}{h^2}$.
 Having the quamtum mechanical problem on matrix form we can use Jacobi's algorithm to solve it, and then compare the numerical eigenvalues to the analytical solutions $\lambda = 3, 7, 11, 15, \ldots$.
 
-Another problem from quantum mechanics worth considering is the Coulomb interaction between two electrons in a harmonic oscillator potential, in three dimensions, as this has an analytical solution we can use as comparison. First consider the Schrödinger equation for a single electron 
-\begin{align}
-	-\frac{\hbar^2}{2m}\dv[2]{r}u(\rho) + \frac{1}{2}kr^2u(r) = E^{(1)}u(r),
-\end{align}
-where $E^{(1)}$ denotes the energies of one electron. Next, adding another electron, we need to introduce the Coulomb interaction too, giving the Schrödinger equation 
+\subsection{Schrödingers Equation - Two Electrons in a Harmonic Oscillator potential}
+
+Another problem from quantum mechanics worth considering is the Coulomb interaction between two electrons in a harmonic oscillator potential, in three dimensions, as this has an analytical solution we can use as comparison. 
+
+When adding another electron to the earlier single-electron case, we need to introduce the Coulomb interaction too, giving the Schrödinger equation 
 \begin{align}
 	&\left(-\frac{\hbar^2}{2m}\dv[2]{r_1} -\frac{\hbar^2}{2m}\dv[2]{r_2} + \frac{1}{2}kr_1^2 + \frac{1}{2}kr_2^2 + \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}\right)\nonumber\\
 	&\cdot u(r_1,r_2)= E^{(2)}u(r_1,r_2).
 \end{align}
 Here the Coulomb potential $V_{coul} = \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}$ for $\beta e^2 = 1.44$ eVnm, the energy of the twoelectrons system is $E^{(1)}$ and the positions of the electrons are given as $r_1$ and $r_2$. 
 
-The next step is to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the centre-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ enabeling to write the Schrödinger equation as
+It is now convinient to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the centre-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ in order to split the Schrödinger equation into two by seperation of variables, $u(r) = \psi(r)\phi(R)$. We from now on only consider the relative distance equation for $\psi(r)$ as the centre-of-mass equation is simply another harmonic oscillator previously shown how to solve. Then we introduce a convinient scaling to make the equation dimensionless so as to solve it using Jacobi's algorithm. As this is completely analogous to the previously shown single-electron case we jump ahead to the final form of the dimensionless equation (See Appendix for detailed description of scaling and seperation of variables):
+\begin{align}
+-\dv[2]{\rho}\psi(\rho) + \omega_r^2\rho^2\psi(\rho) + \frac{1}{\rho} = \lambda\psi(\rho).
+\end{align}
+The frequency $\omega_r$ is a parameter directly linked to the strength of the harmonic oscillator potential. The discetisation and reformulation as a matrix problem in this case is done completely analogous to the previously shown examples, this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ for $V_i = \omega_r^2\rho^2 + \frac{1}{\rho}$.
+
+We are case only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$. 
+
+\section{Results} \label{sec:results}
+
+\section{Discussion} \label{sec:discussion}
+
+\section{Conclusion} \label{sec:conclusion}
+
+
+\begin{thebibliography}{}
+\end{thebibliography}
+
+\begin{appendix}
+Consider the two-electron Schrödinger equation 
+\begin{align}
+	&\left(-\frac{\hbar^2}{2m}\dv[2]{r_1} -\frac{\hbar^2}{2m}\dv[2]{r_2} + \frac{1}{2}kr_1^2 + \frac{1}{2}kr_2^2 + \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}\right)\nonumber\\
+	&\cdot u(r_1,r_2)= E^{(2)}u(r_1,r_2).
+\end{align}
+
+The next step in transforming the equation to dimensionless form is to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the centre-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ enabeling to write the Schrödinger equation as
 \begin{align}
 &\left(-\frac{\hbar^2}{m}\dv[2]{r} -\frac{\hbar^2}{4m}\dv[2]{R} + \frac{1}{4}kr^2 + kR^2 + \frac{\beta e^2}{r}\right)\nonumber\\
 	&\cdot u(r,R)= E^{(2)}u(r,R).
 \end{align}
-Since the relative distance and the centre-of-mass are to independent degrees of freedom, we can use seperation of variables $u(r) = \psi(r)\phi(R)$ to isolate the Schrödinger equation for the relative distance. Since the centre-of-mass equation is just a regular harmonic oscillator potential, similar to the one we solved earlier, we neglect it from here on. The energy of the two-electron system can then be seperated too, as $E^{(2)} = E_r + E_R$, where $E_r$ is the energy of the relative distance equation and $E_R$ is the harmonic oscillator energy of the centre-of-mass frame. The Schrödinger equation for the relative distance 
+
+Since the relative distance and the centre-of-mass are to independent degrees of freedom, we can use seperation of variables $u(r) = \psi(r)\phi(R)$ to isolate the Schrödinger equation for the relative distance. Since the centre-of-mass equation is just a regular harmonic oscillator potential, similar to the one we solved earlier, we neglect it from here on. The energy of the two-electron system can then be seperated too, as $E^{(2)} = E_r + E_R$, where $E_r$ is the energy of the relative distance equation and $E_R$ is the harmonic oscillator energy of the centre-of-mass frame. 
+The Schrödinger equation for the relative distance 
 \begin{align}
 	\left(-\frac{\hbar^2}{m}\dv[2]{r} + \frac{1}{4}kr^2 + \frac{\beta e^2}{r}\right)\psi(r) = E_r\psi(r),
 \end{align}
-can similarly to the single-eectrone case, be made dimensionless by inroducing and itroducing the dimensionless variable $\rho = r/\alpha$. This then gives the equation
+can similarly to the single-eectrone case, be made dimensionless by inroducing and itroducing the dimensionless variable $\rho = r/\alpha$. 
+
+This then gives the equation
 \begin{align}
 -\dv[2]{\rho}\psi(\rho) + \frac{1}{4}\frac{mk}{\hbar^2}\alpha^4\rho^2\psi(\rho) + \frac{m\alpha\beta e^2}{\rho\hbar^2}\psi(\rho) = \frac{m\alpha^2}{\hbar^2}E_r\psi(\rho).
 \end{align}
@@ -293,18 +327,8 @@ resulting in the final form of the Schrödinger equation
 \begin{align}
 -\dv[2]{\rho}\psi(\rho) + \omega_r^2\rho^2\psi(\rho) + \frac{1}{\rho} = \lambda\psi(\rho).
 \end{align}
-The frequency $\omega_r$ is a parameter directly linked to the strength of the harmonic oscillator potential. The discetisation and reformulation as a matrix problem in this case is done completely analogous to the previously shown examples, this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ for $V_i = \omega_r^2\rho^2 + \frac{1}{\rho}$.
-
-Also in this case we are only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$. 
-\section{Results} \label{sec:results}
-
-\section{Discussion} \label{sec:discussion}
-
-\section{Conclusion} \label{sec:conclusion}
-
-\
-\begin{thebibliography}{}
-\end{thebibliography}
+, where $\omega_r$ is a parameter characterizing the harmonic oscillator.
+\end{appendix}
 
 \end{document}
 % End of file `sample62.tex'.

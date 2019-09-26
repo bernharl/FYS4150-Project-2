@@ -30,7 +30,7 @@ k,l: int
     for (int j = 0; j < n; j++){
       if (i != j && fabs(A(i, j)) > max_val){
         max_val = fabs(A(i, j));
-        k = i;
+        k = i; 
         l = j;
       }
     }
@@ -59,9 +59,9 @@ eps: double
  */
 {
 
-  int k, l;
-  double max_val = max_offdiag(A, k, l, n);
-  double a_ll, a_kk, a_ik, a_il, a_kl, e_ik, e_il;
+  int k, l;   
+  double max_val = max_offdiag(A, k, l, n);  
+  double a_ll, a_kk, a_ik, a_il, a_kl, e_ik, e_il;  // Offdiagonal elements of A and elements of basis matrix E
   double t_val, tau, c, s; 
   double iterator = 0;
   int tot_iterations = 3 * n * n;
