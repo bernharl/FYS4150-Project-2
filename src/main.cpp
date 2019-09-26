@@ -4,14 +4,23 @@
 #include <stdio.h>
 #include <assert.h>
 #include <iomanip>
-#include <ctime>
+#include <math.h> // cosine
+#include <ctime> //
 #include <cmath>
 #include <stdexcept>
 
 #include "jacobi_algorithm.cpp"
 
+#define PI 3.14159265
+
 using namespace std;
 
+
+
+inline double analytical_beam(int j, int N, double d , double a)
+{
+  return d + 2 * a * cos((double) j * PI / ((double) N + 1));
+}
 
  
 int main(int argc, char* argv[])
@@ -34,21 +43,72 @@ int main(int argc, char* argv[])
   double d;
   double a;
   double rho0 = 0.0;
+  int iterations;
 
+  ofstream outfile1;
+  ofstream outfile2;
+
+  outfile1.open("bbeam_num.dat");
+  outfile2.open("bbeam_analytical.dat");
+
+  outfile1 << setw(20) << "N"
+           << setw(20) << "lambda1" 
+           << setw(20) << "lambda2"
+           << setw(20) << "lambda 3" 
+           << setw(20) << "CPUtime" 
+           << setw(20) << "# Iterations" << endl;
+
+  outfile2 << setw(20) << "N"
+           << setw(20) << "lambda1" 
+           << setw(20) << "lambda2"
+           << setw(20) << "lambda3" << endl;
+
+  for (int i = 50; i <= 400; i += 5 )
+  {
+    iterations = 0;
+    h = (rhoN - rho0) / ((double) i + 1);
+    d = 2. / (h * h);
+    a = -1. / (h * h);
+    arma::vec analy_eig = arma::zeros <arma::vec> (3);
+    for (int j = 1; j <= 3; j++)
+    {
+      analy_eig(j-1) = analytical_beam(j, i, d, a);
+    }
+
+    arma::mat A = arma::zeros <arma::mat> (i, i);
+    arma::mat E = arma::eye <arma::mat> (i, i);
+    A.diag(0).fill(d);
+    A.diag(1).fill(a);
+    A.diag(-1).fill(a);
+
+    clock_t t_start = clock();
+    Jacobi_Algorithm(A, E, i, h, eps, iterations);
+    clock_t t_end = clock();
+
+    double CPU_time = 1000.0 * (t_end - t_start) / CLOCKS_PER_SEC;
+    arma::vec num_eig = arma::sort(A.diag(0));
+
+    outfile1 << setprecision(12) << setw(20) << i
+             << setprecision(12) << setw(20) << num_eig(0)
+             << setprecision(12) << setw(20) << num_eig(1)
+             << setprecision(12) << setw(20) << num_eig(2)
+             << setprecision(12) << setw(20) << CPU_time 
+             << setprecision(12) << setw(20) << iterations << endl;
+
+    outfile2 << setprecision(12) << setw(20) << i
+             << setprecision(12) << setw(20) << analy_eig(0)
+             << setprecision(12) << setw(20) << analy_eig(1)
+             << setprecision(12) << setw(20) << analy_eig(2) << endl;
+
+  }
+  outfile1.close();
+  outfile2.close();
 
   h = (rhoN - rho0) / ((double) n + 1);
   d = 2. / (h * h);
   a = -1. / (h * h);
+
   /*
-  arma::mat A = arma::zeros <arma::mat> (n, n);
-  arma::mat E = arma::eye <arma::mat> (n, n);
-  A.diag(0).fill(d);
-  A.diag(1).fill(a);
-  A.diag(-1).fill(a);
-
-  Jacobi_Algorithm(A, E, n, h, eps);
-  //cout << A.diag(0) << endl;
-
  
   arma::vec V = arma::zeros <arma::vec> (n);
   Harmonic_Potential(V, rho0, n, h);
@@ -64,13 +124,14 @@ int main(int argc, char* argv[])
   //     << diags(2) << " " << diags(3) << endl;
   */
 
-
+  /*
   int length = 100;
   arma:: vec rho_max = arma::linspace<arma::vec>(1 ,10, length);
 
   double vars[5][length];
 
   clock_t t_start = clock(); // Initializing timer
+  */
   /*
   double progress = 0;
   //#pragma omp parallel for
@@ -125,6 +186,9 @@ int main(int argc, char* argv[])
   }
   outfile.close();
   */
+
+
+  /*
   length = 10;
   omega_r = 1./4;
   //arma:: vec omega_lin = arma::linspace<arma::vec>(0.01 , 5, );
@@ -164,5 +228,9 @@ int main(int argc, char* argv[])
   }
   outfile << endl;
   outfile.close();
+  */
+
+
+
   return 0;
 }

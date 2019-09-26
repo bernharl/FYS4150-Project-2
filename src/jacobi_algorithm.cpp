@@ -38,7 +38,14 @@ k,l: int
   return max_val;
 }
 
-void Jacobi_Algorithm(arma::mat &A, arma::mat &E, int n, double h, double eps)
+
+
+void Jacobi_Algorithm(arma::mat &A,
+                      arma::mat &E,
+                      int n,
+                      double h,
+                      double eps,
+                      int &iterator)
 /*
 Implements the jacobi algorithm for finding the
 eigenvalues on an nxn matrix
@@ -56,6 +63,8 @@ h: double
   The step size
 eps: double
   Tolerance for treating off-diagonal elements in A as zero
+iterator: int
+  Number of similarity transforms to set offdiagonal elements below tolerance.
  */
 {
 
@@ -63,7 +72,7 @@ eps: double
   double max_val = max_offdiag(A, k, l, n);  
   double a_ll, a_kk, a_ik, a_il, a_kl, e_ik, e_il;  // Offdiagonal elements of A and elements of basis matrix E
   double t_val, tau, c, s; 
-  double iterator = 0;
+  iterator = 0;
   int tot_iterations = 3 * n * n;
 
   while(max_val * max_val > eps && iterator <= tot_iterations)
@@ -154,4 +163,15 @@ omega_r: double
     rho = rho0 + (i + 1) * h;
     V(i) = omega_r * omega_r * rho * rho + 1 / rho;
   }
+}
+
+void Jacobi_Algorithm(arma::mat &A,
+                      arma::mat &E,
+                      int n,
+                      double h,
+                      double eps)
+{
+  int iterator = 0;
+  Jacobi_Algorithm(A, E, n, h, eps, iterator);
+
 }
