@@ -85,7 +85,8 @@ The problem is now transformed into a linear algebra eigenvalue problem.  Since 
 are known we can later compare these to those found numerically.
 
 \subsection{Eigenvalue Solver - Jacobi's Algorithm}
-The eigenvalue solver we will show is using the Jacobi algorithm, which converges quite stabely yet very slowly. The essence of the algorithm is to find a diagonal matrix $D$ similar to $A$ using several similarity transforms rotating the column space of $A$ in $n$ dimensional space until $A$ is diagonalised. Because $D$ and $A$ are similar, the diagonal elements $d_ii = \lambda_i$ being the eigenvalues of $D$ are eigenvalues of $A$ too.
+\label{sec:Jacobi}
+The eigenvalue solver we will show is using the Jacobi algorithm, which converges quite stabely yet very slowly. The essence of the algorithm is that we can rotate the column space of $A$ around different axis in the $n$ dimensional space using similarity transforms to obtain a diagonal matrix $D$ being similar to $A$. Due to the similarity between $D$ and $A$, the diagonal elements $d_ii = \lambda_i$ being the eigenvalues of $D$ are eigenvalues of $A$ too.
 
 The similarity transforms used in the Jacobi algorithm is based on a sequence of orthogonal transforms. In an orthogonal transformation an orthogonal basis $F = \{\vec{v}_i | i = 1, 2, \ldots, n\}$, keeps its orthogonality. Meaning that the basis vectors in the new basis $G = \{\vec{w}_i | i = 1, 2, \ldots, n\}$ where $\vec{w}_i = U\vec{v}_i$ forms a new orthogonal basis for the same space as before the transformation, if $U$ is orthogonal i.e. $UU^T = U^TU = I_n$ giving $U^{-1} = U^T$. Therefore the inner product of basis vectors in $G$ give 
 \begin{align}
@@ -160,6 +161,8 @@ The \texttt{while}-loop iterating over the similarity transform thus stops when 
 The Jacobi algorithm can now be used to solve eigenvalue problems for symmetrical matrices like the buckeling beam wave or quantum mechanical problems as shown in the following subsection. 
 
 \subsection{Schrödinger's Equation - One Electron in a Harmonic Oscillator potential}
+
+\label{sec:SEharmosc}
 As mentioned earlier we can actually use the Jacobi algorithm to solve quantum mechanical problems. We will here consider how to find the energy eigenvalues of the Hamiltonian operator for an electron in a Harmonic Oscillator potential $V(r)$ in three dimensions. For simplicity we only consider the radial Schrödinger equation 
 \begin{align}
 -\frac{\hbar^2}{2m}\left(\frac{1}{r^2}\dv{r}r^2\dv{r} - \frac{l(l+1)}{r^2}\right)R(r) + V(r)R(r) = E R(r),
@@ -217,6 +220,7 @@ Having the quamtum mechanical problem on matrix form we can use Jacobi's algorit
 
 \subsection{Schrödingers Equation - Two Electrons in a Harmonic Oscillator potential}
 
+\label{sec:SEtwoelectron}
 Another problem from quantum mechanics worth considering is the Coulomb interaction between two electrons in a harmonic oscillator potential, in three dimensions, as this has an analytical solution we can use as comparison. 
 
 When adding another electron to the earlier single-electron case, we need to introduce the Coulomb interaction too, giving the Schrödinger equation 
@@ -235,25 +239,26 @@ The frequency $\omega_r$ is a parameter directly linked to the strength of the h
 We are case only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$. 
 
 \section{Results} \label{sec:results}
-
+The buckling beam equation, given by equation (\ref{eq:matrix_eq}) was solved using the Jacobi algorithm as described in section \ref{sec:Jacobi}. Plotting the relative error between the first three of the numerical eigenvalues and analytical eigenvalues given by equation (\ref{eq:analyticaleig}) as a function of increasing the grid size $N$ produced the result shown in Figure \ref{fig:relerr}.\\\indent
 \begin{figure*}[h]
-	\plotone{{Figures/eigenrelerr}.eps}
-	\caption{Plot showing the relative error between the numerical and analytical eigenvalues given by equation \ref{eq:analyticaleig}. }
+	\plotone{{figures/eigenrelerr}.eps}
+	\caption{Figure showing the relative error between the numerical and analytical eigenvalues given by equation \ref{eq:analyticaleig} for the buckling beam problem given by \ref{eq:matrix_eq}. }
 	\label{fig:relerr}
 \end{figure*}
-
+For the harmonic oscillator potential described in section \ref{sec:SEharmosc} the first four numerical eigenvalues were compared with the known analytical egenvalues for this problem, namely $3$, $7$, $11$ and $15$. Figure \ref{fig:rhomax} shows the absolute error of the first four eigenvalues compared with their analytical solutions as a function of the dimensionless maximum distance $rho_{max}$. This result was achieved using a matrix of dimensions $400x400$ for each $\rho_{max}$.\\\indent
 \begin{figure*}[h]
-	\plotone{{Figures/rhoN_plots}.eps}
-	\caption{}
+	\plotone{{figures/rhoN_plots}.eps}
+	\caption{Figure showing the absolute error of the first four eigenvalues for the harmonic oscillator potential described in section \ref{sec:SEharmosc} as a function of varying the dimensionless maximum distance $\rho_{max}$.}
 	\label{fig:rhomax}
 \end{figure*}
-
-
+For the two electrons in a harmonic oscillator potential ,as described in section \ref{sec:SEtwoelectron}, the first eigenstate was plotted as a function of $\rho$ for varying degree of the potential strength $\omega_r$.  This is shown in figure \ref{fig:eigenstates}.
 \begin{figure*}[h]
-	\plotone{{Figures/eigenstates}.eps}
-	\caption{}
+	\plotone{{figures/eigenstates}.eps}
+	\caption{Figure showing the eigenvector for the ground state in the two electron harmonic oscillator potential as described in section \ref{sec:SEtwoelectron} for varying $\omega$}
 	\label{fig:eigenstates}
 \end{figure*}
+
+\section{Discussion} \label{sec:discussion}
 
 \section{Discussion} \label{sec:discussion}
 
