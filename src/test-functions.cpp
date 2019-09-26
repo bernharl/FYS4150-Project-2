@@ -34,6 +34,7 @@ TEST_CASE("Comparing eigenvalues with armadillo library")
 
 TEST_CASE("Verifies that max_offdiag method choosesthe correct maximum value and checks indices")
 {
+  
   double t = -1e3; //Number with larger fabs than 0
   int N = 5;
   int k, l;
