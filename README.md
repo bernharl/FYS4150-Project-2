@@ -10,8 +10,9 @@ Second project in Computational Physics(FYS4150)
 ## Structure: 
 
 * src/Jacobi_argorithm.cpp Contains all methods used in calculations.
-* src/main.cpp Runs the methods in Jacobi_algorithm.cpp.
+* src/main.cpp Runs the methods in Jacobi_algorithm.cpp. Results are saved in src/eigendata.dat
 * src/tests_main.cpp Contains all unit tests run by Catch2.
-* src/plot_states.py Plots the ground state eigenvectors for a harmonic oscillator well with repulsive Coulomb interaction.
+* src/plot_infinity.py Plots the absolute errors of the first four eigenvalues of quantum dots in three dimensions with a single electron. Plots are saved in /doc/figures
+* src/plot_states.py Plots the ground state eigenvectors for a harmonic oscillator well with repulsive Coulomb interaction. Plots are saved in doc/figures/
 &nbsp;
  
