@@ -7,6 +7,11 @@ Second project in Computational Physics(FYS4150)
 * Should you want to run compile the c++ source code manually, run "make" in src/, this should generate two executables, one for unit tests using Catch2 (https://github.com/catchorg/Catch2) and one for running the main calculations.
 &nbsp;
 
+## Run Instructions:
+* src/mainprog.out Is compiled when running make, this executable takes two input arguments: n: dimension of nxn matrix, eps: tolerance for treating off-diagonal elements as zero in the Jacobi Algorithm, ![equation](http://www.sciweavers.org/tex2img.php?eq=%24%5Crho_n%24&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0): What is considered "infinity" in the quantum system.
+* src/testcode.out Run this for unit tests
+&nbsp;
+
 ## Structure: 
 
 * src/Jacobi_argorithm.cpp Contains all methods used in calculations.
