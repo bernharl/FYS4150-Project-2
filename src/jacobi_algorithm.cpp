@@ -53,12 +53,13 @@ eigenvalues on an nxn matrix
 Parameters
 ------------
 A: arma::mat
-  An armadillo object nxn matrix
+  An armadillo object nxn matrix.
+  Coefficient matrix
 E: arma::mat
   An armadillo object nxn matrix.
   Serves as an orthogonal basis of n dimensional space
 n: int
- The dimensions of A
+ The dimensions of A (grid size)
 h: double
   The step size
 eps: double
@@ -71,10 +72,11 @@ iterator: int
   int k, l;   
   double max_val = max_offdiag(A, k, l, n);  
   double a_ll, a_kk, a_ik, a_il, a_kl, e_ik, e_il;  // Offdiagonal elements of A and elements of basis matrix E
-  double t_val, tau, c, s; 
+  double t, tau, c, s;                              // Trigonometric functions used for rotations
   iterator = 0;
-  int tot_iterations = 3 * n * n;
+  int tot_iterations = 3 * n * n;                   // Maximum rotations allowed
 
+  // Similarity transforms
   while(max_val * max_val > eps && iterator <= tot_iterations)
   { 
     iterator ++;
@@ -85,14 +87,14 @@ iterator: int
     tau = (a_ll - a_kk) / (2. * a_kl);
     if(tau > 0)
     {
-      t_val = 1.0 / (tau + sqrt(1. + tau * tau));
+      t = 1.0 / (tau + sqrt(1. + tau * tau));
     }
     else
     {
-      t_val = -1.0 / (-tau + sqrt(1. + tau * tau));
+      t = -1.0 / (-tau + sqrt(1. + tau * tau));
     }
-    c = 1. / sqrt(1. + t_val * t_val);
-    s = t_val * c; 
+    c = 1. / sqrt(1. + t * t);
+    s = t * c; 
 
     A(k, k) = a_kk * c * c - 2.0 * a_kl * c * s + a_ll * s * s;
     A(l, l) = a_ll * c * c + 2.0 * a_kl * c * s + a_kk * s * s;
@@ -118,7 +120,7 @@ iterator: int
 
 void Harmonic_Potential(arma::vec &V, double rho0, int n, double h)
 /*
-Computes the harmonic oscillator potential a particle
+Computes the harmonic oscillator potential.
 
 Parameters
 -----------
@@ -140,7 +142,9 @@ n: int
 
 void coulomb_potential(arma::vec &V, double rho0, double h, int n, double omega_r)
 /*
-Computes the coulomb potential for a particle
+Computes the potential for Coulomb 
+interaction between two electrons 
+in harmonic oscillator.
 
 Parameters
 -----------
@@ -170,6 +174,9 @@ void Jacobi_Algorithm(arma::mat &A,
                       int n,
                       double h,
                       double eps)
+/*Overloaded Jacobi_Algorithm function 
+  to handle default value of iterator.
+*/
 {
   int iterator = 0;
   Jacobi_Algorithm(A, E, n, h, eps, iterator);

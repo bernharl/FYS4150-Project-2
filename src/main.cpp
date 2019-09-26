@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <iomanip>
-#include <math.h> // cosine
-#include <ctime> //
+#include <math.h> // tigonometric functions
+#include <ctime>  // Run times  
 #include <cmath>
 #include <stdexcept>
 
@@ -15,20 +15,30 @@
 
 using namespace std;
 
-
-
 inline double analytical_beam(int j, int N, double d , double a)
+/* Compute analytical eigenvalues of buckling beam problem.
+
+Parameters
+------------
+j: int
+  j-th eigenvalue of buckling beam equation.
+N: int
+  Grid size.
+d: double
+  Diagonal elements.
+a: double
+  Upper and lower diagonal elements
+*/
 {
   return d + 2 * a * cos((double) j * PI / ((double) N + 1));
 }
 
  
 int main(int argc, char* argv[])
-
 { 
-  int n;
-  double eps;
-  double rhoN;
+  int n;        // Grid size
+  double eps;   // Tolerance
+  double rhoN;  // Upper limit of rho
 
   if( argc != 4 ) {
     throw invalid_argument("Program takes three variables only through command line. Please insert dimension n, toleranse epsilon and rhoN.");
@@ -38,14 +48,17 @@ int main(int argc, char* argv[])
     eps = atof(argv[2]);
     rhoN = atof(argv[3]);
   }
-  double omega_r;
-  double h;
-  double d;
-  double a;
-  double rho0 = 0.0;
+  double omega_r;   // Harmonic oscillator potential  
+  double h;         // Step size
+  double d;         // Diagonal elements
+  double a;         // Upper and lower diagonal elements
+  double rho0 = 0.0;  // Lower limit in rho
   int iterations;
+  
+  // Buckling beam problem:
 
-  ofstream outfile1;
+  // Writing CPU time numerical and analytical eigenvalues to files
+  ofstream outfile1;  
   ofstream outfile2;
 
   outfile1.open("bbeam_num.dat");
@@ -104,37 +117,23 @@ int main(int argc, char* argv[])
   outfile1.close();
   outfile2.close();
 
+  // One electron in a harmonic oscillator potential:
+
   h = (rhoN - rho0) / ((double) n + 1);
   d = 2. / (h * h);
   a = -1. / (h * h);
 
-  /*
- 
-  arma::vec V = arma::zeros <arma::vec> (n);
+  arma::vec V = arma::zeros <arma::vec> (n);  
   Harmonic_Potential(V, rho0, n, h);
   arma::mat P = arma::zeros <arma::mat> (n, n);
-  P.diag(0) += d + V;
-  P.diag(1).fill(a);
-  P.diag(-1).fill(a);
-
-  
-  Jacobi_Algorithm(P, E, n, h, eps);
-  arma:: vec diags = arma::sort(P.diag(0));
-  //cout << diags(0) << " " << diags(1) << " " 
-  //     << diags(2) << " " << diags(3) << endl;
-  */
-
-  /*
-  int length = 100;
-  arma:: vec rho_max = arma::linspace<arma::vec>(1 ,10, length);
-
+  int length = 100;  
+  arma:: vec rho_max = arma::linspace<arma::vec>(1, 10, length);
   double vars[5][length];
-
-  clock_t t_start = clock(); // Initializing timer
-  */
-  /*
   double progress = 0;
-  //#pragma omp parallel for
+
+  // Iterating over several rhoN for constant grid size n,
+  // to find best rhoN:
+
   for (int i=0; i<length; i++) 
   {
     arma::mat P = arma::zeros <arma::mat> (n, n);
@@ -146,13 +145,12 @@ int main(int argc, char* argv[])
     arma::vec V = arma::zeros <arma::vec> (n);
     Harmonic_Potential(V, rho0, n, h);
     arma::mat E = arma::eye <arma::mat> (n, n);
-    P.diag(0) += d + V;
+    P.diag(0) += d + V; // Adding potential along diagonal
     P.diag(1).fill(a);
     P.diag(-1).fill(a);
     Jacobi_Algorithm(P, E, n, h, eps);
 
-
-    arma:: vec diags = arma::sort(P.diag(0));
+    arma:: vec diags = arma::sort(P.diag(0)); // Sorted eigenvalues
 
     vars[0][i] = rhoN;
     vars[1][i] = diags(0);
@@ -162,10 +160,7 @@ int main(int argc, char* argv[])
     progress += 1;
     cout << "iterations left: "<< progress << "/" << length << endl;
   }
-  clock_t t_end = clock(); // End timer
-  double CPU_time = (t_end - t_start) / CLOCKS_PER_SEC;
-  cout << "Run time: " << CPU_time << " s " << endl;
-
+  // Writing first four eigenvalues to file
   ofstream outfile;
   outfile.open("eigendata.dat");
   outfile << setw(20) << "rhoN"
@@ -185,13 +180,10 @@ int main(int argc, char* argv[])
 
   }
   outfile.close();
-  */
+  
+  // Coulomb interaction between two electrons
+  // in a harmonic oscillator potential: 
 
-
-  /*
-  length = 10;
-  omega_r = 1./4;
-  //arma:: vec omega_lin = arma::linspace<arma::vec>(0.01 , 5, );
   double omega_lin[6] = {0.01, 0.05, 0.25, 0.5, 1, 5};
   arma::mat P_col = arma::zeros <arma::mat> (n, n);
   arma::vec V_col = arma::zeros <arma::vec> (n);
@@ -200,25 +192,29 @@ int main(int argc, char* argv[])
   arma::mat ground_states = arma::zeros <arma::mat> (n, 6);
   arma::mat lambdas = arma::zeros <arma::mat> (n, 6);
   arma::uword min_pos;
+
+  // Calculating eigenvalue of ground state for different omega_r:
+
   for (int i = 0; i < 6; i++)
   {
     coulomb_potential(V_col, rho0, h, n, omega_lin[i]);
-    P_col.diag(0) += d + V_col;
+    P_col.diag(0) += d + V_col;   // Adding potential along diagonal
     P_col.diag(1).fill(a);
     P_col.diag(-1).fill(a);
     Jacobi_Algorithm(P_col, E_col, n, h, eps);
-    energy_diag = arma::sort(P_col.diag(0));
-    min_pos = P_col.diag(0).index_min();
+    energy_diag = arma::sort(P_col.diag(0));  // Sorted energy eigenvalues
+    min_pos = P_col.diag(0).index_min();      // Extracting index of ground state
     ground_states.col(i) = E_col.col(min_pos);
     lambdas.col(i) = P_col.diag(0);
     cout << omega_lin[i] << " " << energy_diag(0) << endl;
     P_col.fill(0);
     E_col.fill(0);
-    E_col.diag(0).fill(1);
+    E_col.diag(0).fill(1);  // Resetting basis matrix
   }
+  // Saving ground states and ground state energies in files
   ground_states.save("ground_states.txt", arma::arma_ascii);
   lambdas.save("lambdas.txt", arma::arma_ascii);
-
+  // Write omega_r and rhoN to file
   ofstream outfile;
   outfile.open("omegas.txt");
   outfile << rhoN << endl;
@@ -228,9 +224,6 @@ int main(int argc, char* argv[])
   }
   outfile << endl;
   outfile.close();
-  */
-
-
-
+  
   return 0;
 }
