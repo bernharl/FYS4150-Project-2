@@ -29,5 +29,4 @@ if [ "$ynplot" == "y" ] # If y, compile and run both c++ codes with O3 optimizat
 then
   python3 plot_infinity.py
   python3 plot_states.py
-  python3 plot_beam.py
 fi
