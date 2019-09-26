@@ -2,12 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
-#include <assert.h>
 #include <iomanip>
-#include <math.h> // tigonometric functions
-#include <ctime>  // Run times  
-#include <cmath>
-#include <stdexcept>
+#include <math.h>     // Tigonometric functions
+#include <ctime>      // Run times  
+#include <stdexcept>  
 
 #include "jacobi_algorithm.cpp"
 
@@ -215,15 +213,15 @@ int main(int argc, char* argv[])
   ground_states.save("ground_states.txt", arma::arma_ascii);
   lambdas.save("lambdas.txt", arma::arma_ascii);
   // Write omega_r and rhoN to file
-  ofstream outfile;
-  outfile.open("omegas.txt");
-  outfile << rhoN << endl;
+  ofstream outfile3;
+  outfile3.open("omegas.txt");
+  outfile3 << rhoN << endl;
   for (int i = 0; i < 6; i++)
   {
-    outfile << omega_lin[i] << " ";
+    outfile3 << omega_lin[i] << " ";
   }
-  outfile << endl;
-  outfile.close();
+  outfile3 << endl;
+  outfile3.close();
   
   return 0;
 }
