@@ -273,11 +273,29 @@ The frequency $\omega_r$ is a parameter directly linked to the strength of the h
 We are case only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$.
 
 \section{Results} \label{sec:results}
+\begin{figure*}[h]
+	\plotone{{figures/eigenrelerr}.eps}
+	\caption{Plot showing the relative error between the numerical and analytical eigenvalues given by equation \ref{eq:analyticaleig}. }
+	\label{fig:relerr}
+\end{figure*}
 
+\begin{figure*}[h]
+	\plotone{{figures/rhoN_plots}.eps}
+	\caption{}
+	\label{fig:rhomax}
+\end{figure*}
+
+
+\begin{figure*}[h]
+	\plotone{{figures/eigenstates}.eps}
+	\caption{}
+	\label{fig:eigenstates}
+\end{figure*}
 \section{Discussion} \label{sec:discussion}
 
-\section{Conclusion} \label{sec:conclusion}
 
+\section{Conclusion} \label{sec:conclusion}
+The Jacobi algorithm yields usable results for all three physical models investigated in this project. Still, the algorithm's inefficiency
 
 \begin{thebibliography}{}
 \end{thebibliography}
@@ -329,39 +347,6 @@ resulting in the final form of the Schrödinger equation
 \end{align}
 , where $\omega_r$ is a parameter characterizing the harmonic oscillator.
 \end{appendix}
-The frequency $\omega_r$ is a parameter directly linked to the strength of the harmonic oscillator potential. The discetisation and reformulation as a matrix problem in this case is done completely analogous to the previously shown examples, this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ for $V_i = \omega_r^2\rho^2 + \frac{1}{\rho}$.
-
-Also in this case we are only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$.
-\section{Results} \label{sec:results}
-\begin{figure*}[h]
-	\plotone{{figures/eigenrelerr}.eps}
-	\caption{Plot showing the relative error between the numerical and analytical eigenvalues given by equation \ref{eq:analyticaleig}. }
-	\label{fig:relerr}
-\end{figure*}
-
-\begin{figure*}[h]
-	\plotone{{figures/rhoN_plots}.eps}
-	\caption{}
-	\label{fig:rhomax}
-\end{figure*}
-
-
-\begin{figure*}[h]
-	\plotone{{figures/eigenstates}.eps}
-	\caption{}
-	\label{fig:eigenstates}
-\end{figure*}
-
-
-
-
-\section{Discussion} \label{sec:discussion}
-
-\section{Conclusion} \label{sec:conclusion}
-The Jacobi algorithm yields usable results for all three physical models investigated in this project. Still, the algorithm's inefficiency
-\
-\begin{thebibliography}{}
-\end{thebibliography}
 
 \end{document}
 % End of file `sample62.tex'.
