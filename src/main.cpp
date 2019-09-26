@@ -88,17 +88,17 @@ int main(int argc, char* argv[])
     double CPU_time = 1000.0 * (t_end - t_start) / CLOCKS_PER_SEC;
     arma::vec num_eig = arma::sort(A.diag(0));
 
-    outfile1 << setprecision(7) << setw(20) << i
-             << setprecision(7) << setw(20) << num_eig(0)
-             << setprecision(7) << setw(20) << num_eig(1)
-             << setprecision(7) << setw(20) << num_eig(2)
-             << setprecision(7) << setw(20) << CPU_time 
-             << setprecision(7) << setw(20) << iterations << endl;
+    outfile1 << setprecision(12) << setw(20) << i
+             << setprecision(12) << setw(20) << num_eig(0)
+             << setprecision(12) << setw(20) << num_eig(1)
+             << setprecision(12) << setw(20) << num_eig(2)
+             << setprecision(12) << setw(20) << CPU_time 
+             << setprecision(12) << setw(20) << iterations << endl;
 
-    outfile2 << setprecision(7) << setw(20) << i
-             << setprecision(7) << setw(20) << analy_eig(0)
-             << setprecision(7) << setw(20) << analy_eig(1)
-             << setprecision(7) << setw(20) << analy_eig(2) << endl;
+    outfile2 << setprecision(12) << setw(20) << i
+             << setprecision(12) << setw(20) << analy_eig(0)
+             << setprecision(12) << setw(20) << analy_eig(1)
+             << setprecision(12) << setw(20) << analy_eig(2) << endl;
 
   }
   outfile1.close();
