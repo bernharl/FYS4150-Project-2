@@ -158,12 +158,14 @@ The \texttt{while}-loop iterating over the similarity transform thus stops when 
 	e_{il} &= ce_{il} + se_{ik}.
 \end{align}
 
+As discussed by (SITER MORTENS KOMPENDIUM HER) the Jacobi algorithm usually requires between $3n^2-5n^2$ rotations, and each rotation has about $4n$ operations, resulting in $13n^3-20n^3$ operations to zero out the off-diagonal elements. Since we only consider sparse matrices in our case, we would expect $\sim n$ rotations needed to diagonalise. 
+
 The Jacobi algorithm can now be used to solve eigenvalue problems for symmetrical matrices like the buckeling beam wave or quantum mechanical problems as shown in the following subsection. 
 
 \subsection{Schrödinger's Equation - One Electron in a Harmonic Oscillator potential}
 
 \label{sec:SEharmosc}
-As mentioned earlier we can actually use the Jacobi algorithm to solve quantum mechanical problems. We will here consider how to find the energy eigenvalues of the Hamiltonian operator for an electron in a Harmonic Oscillator potential $V(r)$ in three dimensions. For simplicity we only consider the radial Schrödinger equation 
+Next we show how to apply the Jacobi algorithm to find the energy eigenvalues of the Hamiltonian operator for an electron in a harmonic oscillator potential $V(r)$ in three dimensions. For simplicity we only consider the radial Schrödinger equation 
 \begin{align}
 -\frac{\hbar^2}{2m}\left(\frac{1}{r^2}\dv{r}r^2\dv{r} - \frac{l(l+1)}{r^2}\right)R(r) + V(r)R(r) = E R(r),
 \end{align}
@@ -171,34 +173,28 @@ where $V(r) = \frac{1}{2}kr^2$ with $k = m\omega^2$, and the energies $E$ of the
 \begin{align}
 	E_{nl} = \hbar\omega\left(2n + l + \frac{3}{2}\right),
 \end{align}
-where $n = 0, 1, 2,\ldots$ and $l = 0, 1, 2, \ldots$. $n$ and $l$ represent the principal and orbital momentum quantum numbers. Since this is a radial equation we let $r\in[0,\infty)$. Next we let $R(r) = \frac{u(r)}{r}$ so that 
+where $n = 0, 1, 2,\ldots$ and $l = 0, 1, 2, \ldots$. $n$ and $l$ represent the principal and orbital momentum quantum numbers. We let the radial distance $r\in[0,\infty)$. Next we let $R(r) = \frac{u(r)}{r}$ so that 
 \begin{align}
 	-\frac{\hbar^2}{2m}\dv[2]{r}u(r) + \left(V(r) + \frac{l(l+1)}{r^2}\frac{\hbar^2}{2m}\right)u(r) = Eu(r).
 	\label{eq:u_r}
 \end{align}
 In order to reflect reality we must require $u(0) = u(\infty) = 0$, as the wave function of the electron must fall of to zero when going to infinity. 
 
-Now we want to make our integration variable $r$ dimensionless, enabeling a safer handling on a computer. This is done by letting $\rho = \frac{r}{\alpha}$, where $\alpha$ is a parameter with dimension length. Inserting this into (\ref{eq:u_r}) we obtain
+To ensure a safer handling of the equation we introduce the dimensionless radial distance $\rho = \frac{r}{\alpha}$, where $\alpha$ is a parameter with dimension length. Inserting this into (\ref{eq:u_r}) we obtain
 \begin{align}
 	-\frac{\hbar^2}{2m\alpha^2}\dv[2]{\rho}u(\rho) + \left(V(\rho) + \frac{l(l+1)}{\rho^2}\frac{\hbar^2}{2m\alpha^2}\right)u(\rho) = Eu(\rho).
+	\label{eq:schrodinger_rho}
 \end{align}
-To simplify things further we only consider the case where $l=0$. The dimensionless potensial is then inserted into the equation giving 
+To simplify things further we only consider the case where $l=0$. Then inserting the dimensionless potensial $V(\rho) = \frac{k}{2}\alpha^2\rho^2u(\rho)$ into (\ref{eq:schrodinger_rho}) we can rewrite the equation as 
 \begin{align}
-	-\frac{\hbar^2}{2m\alpha^2} \dv[2]{\rho} u(\rho) + \frac{k}{2}\alpha^2\rho^2u(\rho) = Eu(\rho)
+	-\frac{\hbar^2}{2m\alpha^2} \dv[2]{\rho} u(\rho) + \frac{k}{2}\alpha^2\rho^2u(\rho) = Eu(\rho),
 \end{align}
-which we can rewrite as 
-\begin{align}
-	-\dv[2]{\rho} u(\rho) + \frac{mk}{\hbar^2}\alpha^4\rho^2u(\rho) = \frac{2m\alpha^2}{\hbar^2}Eu(\rho).
-\end{align}
-Because we can choose whatever natural length scale we find convinient, we choose to let 
-\begin{align}
-	\frac{mk}{\hbar^2}\alpha^4 = 1,
-\end{align}
-making the constant 
+by multiplying both sides by $\frac{2m\alpha^2}{\hbar^2}$.
+In order to simplify things even further we introduce a natural length scale so that 
 \begin{align}
 	\alpha = \left(\frac{\hbar^2}{mk}\right)^{1/4},
 \end{align}
-being set by the mass of the electron $m$ and the strength potential $k$ and we have let the frequency $\omega = 1$ for simplicity sake.
+being set by the mass of the electron $m$ and the strength potential $k$ and we let the frequency $\omega = 1$.
 The energy eigenvalues are then defined as 
 \begin{align}
 	\lambda = \frac{2m\alpha^2}{\hbar^2}E.
@@ -206,16 +202,16 @@ The energy eigenvalues are then defined as
 
 The Schrödinger equation is now on a dimensionless form 
 \begin{align}
-	-\dv[2]{\rho}u(\rho) + \rho^2u(\rho) = \lambda u(\rho).
+	-\dv[2]{\rho}u(\rho) + \rho^2u(\rho) = \lambda u(\rho),
 	\label{eq:schrodinger_dimless}
 \end{align}
-
-In order to solve for the eigenvaules, similar to the way we did for the buckeling problem, we introduce the discretisation
+where $V(\rho)=\rho^2$ is now an effective potential.
+In order to solve for the eigenvaules numerically we discretize the equation so that 
 \begin{align}
 	&-\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + \rho_i^2 u_i \\
-	&= -\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + v_iu_i = \lambda u_i, 
+	&= -\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + V_iu_i = \lambda u_i, 
 \end{align}
-letting $V_i = \rho_i^2$. The step size $h$ has the same form as shown earlier only for a different $\rho_n$. Since we need the wave function $u(\rho)$ to tent to zero at infinity, $\rho\to \infty$, we must set $\rho_{max} =\rho_n= \infty$. However, using a comuter to solve this eigenvalue problem it is impossible to let $\rho_{max} = \infty$, meaning we need to find a suitably large number to approximate infinity. The approximation of infinity will also be dependent on the matrix size, meaning we have to balance our choiced for the parameter $\rho_{max}$ and $n$ in order to acheive the wanted precision in the eigenvalues. Now, from this discritesiation we can write the equation on the same matrix form as (\ref{eq:matrix_eq}), only this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ and similarly the secondary diagonals $e_i = -\frac{1}{h^2}$.
+letting the effective potential $V_i = \rho_i^2$. The step size $h$ has the same form as shown earlier only for a different $\rho_n$. Since we need the wave function $u(\rho)$ to tent to zero at infinity, $\rho\to \infty$, we must set $\rho_{max} =\rho_n= \infty$. However, using a comuter to solve this eigenvalue problem it is impossible to let $\rho_{max} = \infty$, meaning we need to find a suitably large number to approximate infinity. The approximation of infinity will also be dependent on the matrix size, meaning we have to balance our choiced for the parameter $\rho_{max}$ and $n$ in order to acheive the wanted precision in the eigenvalues. Now, from this discritesiation we can write the equation on the same matrix form as (\ref{eq:matrix_eq}), only this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ and similarly the secondary diagonals $e_i = -\frac{1}{h^2}$.
 Having the quamtum mechanical problem on matrix form we can use Jacobi's algorithm to solve it, and then compare the numerical eigenvalues to the analytical solutions $\lambda = 3, 7, 11, 15, \ldots$.
 
 \subsection{Schrödingers Equation - Two Electrons in a Harmonic Oscillator potential}
@@ -241,19 +237,19 @@ We are case only intrested in the ground state of the system, thus we let $l=0$.
 \section{Results} \label{sec:results}
 The buckling beam equation, given by equation (\ref{eq:matrix_eq}) was solved using the Jacobi algorithm as described in section \ref{sec:Jacobi}. Plotting the relative error between the first three of the numerical eigenvalues and analytical eigenvalues given by equation (\ref{eq:analyticaleig}) as a function of increasing the grid size $N$ produced the result shown in Figure \ref{fig:relerr}.\\\indent
 \begin{figure*}[h]
-	\plotone{{figures/eigenrelerr}.eps}
+	\plotone{{Figures/eigenrelerr}.eps}
 	\caption{Figure showing the relative error between the numerical and analytical eigenvalues given by equation \ref{eq:analyticaleig} for the buckling beam problem given by \ref{eq:matrix_eq}. }
 	\label{fig:relerr}
 \end{figure*}
 For the harmonic oscillator potential described in section \ref{sec:SEharmosc} the first four numerical eigenvalues were compared with the known analytical egenvalues for this problem, namely $3$, $7$, $11$ and $15$. Figure \ref{fig:rhomax} shows the absolute error of the first four eigenvalues compared with their analytical solutions as a function of the dimensionless maximum distance $rho_{max}$. This result was achieved using a matrix of dimensions $400x400$ for each $\rho_{max}$.\\\indent
 \begin{figure*}[h]
-	\plotone{{figures/rhoN_plots}.eps}
+	\plotone{{Figures/rhoN_plots}.eps}
 	\caption{Figure showing the absolute error of the first four eigenvalues for the harmonic oscillator potential described in section \ref{sec:SEharmosc} as a function of varying the dimensionless maximum distance $\rho_{max}$.}
 	\label{fig:rhomax}
 \end{figure*}
 For the two electrons in a harmonic oscillator potential ,as described in section \ref{sec:SEtwoelectron}, the first eigenstate was plotted as a function of $\rho$ for varying degree of the potential strength $\omega_r$.  This is shown in figure \ref{fig:eigenstates}.
 \begin{figure*}[h]
-	\plotone{{figures/eigenstates}.eps}
+	\plotone{{Figures/eigenstates}.eps}
 	\caption{Figure showing the eigenvector for the ground state in the two electron harmonic oscillator potential as described in section \ref{sec:SEtwoelectron} for varying $\omega$}
 	\label{fig:eigenstates}
 \end{figure*}
