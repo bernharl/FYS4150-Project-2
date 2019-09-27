@@ -1,4 +1,3 @@
-
 \documentclass[twocolumn]{aastex62}
 
 
@@ -17,9 +16,6 @@
 
 \title{Project 2 FYS4150}
 
-
-
-
 \author{Håkon Tansem}
 
 \author{Nils-Ole Stutzer}
@@ -33,9 +29,9 @@
 \section{Introduction} \label{sec:intro}
 When solving physical and mathematical problems, a recurring problem is to find eigenvalues of a matrix or an operator. Since a wide variety of problems can be solved by setting up and solving eigenvalue equations it is, essential to develop efficient methods for finding eigenvalues. 
 
-In this paper we will show how an eigenvalue solver implementing Jacobi's algorithm can be used to solve problems like the eigenmodes of the classical wave equation and the eigenenergies of the Schrödinger equation for one or two electron in a harmonic oscillator potential. Both problems can be rescaled in such a way that the resulting equations are on dimensionless form. On this generalized, dimensionless form, it covers several physical eigenvalue problems, making this a very versatile method. We will explore how the numerical and analytical eigenvalues of the problems illustrated compare and how the run time of the Jacobi algorithm varies with different grid sizes.
+In this paper we will show how an eigenvalue solver implementing Jacobi's algorithm, as described by \citep[Ch. 7.4]{Jensen:2015}, can be used to solve problems like the eigenmodes of the classical wave equation and the eigenenergies of the Schrödinger equation for one or two electron in a harmonic oscillator potential. Both problems can be rescaled in such a way that the resulting equations are on dimensionless form. On this generalized, dimensionless form, it covers several physical eigenvalue problems, making this a very versatile method. We will explore how the numerical and analytical eigenvalues of the problems illustrated compare and how the run time of the Jacobi algorithm varies with different grid sizes.
 
-JEFF Our method section states needed theory and outlines the physical problems to be solved and the strategies we employ to solve them. The results produced are presented in the results section. JEFF   
+Our method section states needed theory and outlines the physical problems to be solved and the strategies we employ to solve them. The results produced are presented in the results section and discussed in the discussion section.   
 
 \section{Method} \label{sec:method}
 \subsection{Classical Wave - The Buckling Beam Problem}
@@ -140,7 +136,7 @@ we get a quadratic equation $t^2 + 2\tau t - 1 = 0$, where $t = \tan \theta$, fo
 \end{align}
 This way we can tune the angle $\theta$ in order to zero out $b_{kl}$ and then find the remaining elements of $B$.  The way $t$ is defined is numerically unstable. If $\tau\gg1$ a computer will let $1+\tau^2 = \tau^2$ resulting in $t = -\tau \pm \tau$ which is not correct. Using some simple algebra we rewrite $t = -\frac{1}{-\tau \pm \sqrt{1 + \tau^2}}$, which is more numerically stable. Let $t = \frac{1}{\tau + \sqrt{1 + \tau^2}}$ whenever $\tau>0$ and let $t = -\frac{1}{-\tau + \sqrt{1+\tau^2}}$ when $t<0$, thus circumventing  subtraction of almost equal numbers in the denominator which can resulting in division by zero.
 
-As shown by (SITER KOMPENDIET TIL MORTEN HER) for a $2\time 2$-matrix w.l.o.g., the off-diagonal norm of a similarity transform $B$ is 
+As shown by \citep[Ch. 7.4]{Jensen:2015} for a $2\time 2$-matrix w.l.o.g., the off-diagonal norm of a similarity transform $B$ is 
 \begin{align}
 \text{Off}(B)^2&= \sum_{i\neq j} |b_{ij}^2| = ||A||_F^2 - 2a_{kl},
 \label{eq:Off_reduction}
@@ -160,7 +156,7 @@ After having looped over the similarity transforms the remaining matrix should b
 	e_{il} &= ce_{il} + se_{ik}.
 \end{align}
 
-As discussed by (SITER MORTENS KOMPENDIUM HER) the Jacobi algorithm usually requires between $3n^2-5n^2$ rotations, and each rotation requires $\sim 4n$ operations, resulting in $13n^3-20n^3$ operations to zero out the off-diagonal elements. Since we only consider sparse matrices in our case, we expect $\sim n$ rotations needed to diagonalize. 
+As discussed by \citep[p. 217]{Jensen:2015} the Jacobi algorithm usually requires between $3n^2-5n^2$ rotations, and each rotation requires $\sim 4n$ operations, resulting in $13n^3-20n^3$ operations to zero out the off-diagonal elements. Since we only consider sparse matrices in our case, we expect $\sim n$ rotations needed to diagonalize. 
 
 The Jacobi algorithm can now be used to solve eigenvalue problems for symmetrical matrices like the buckling beam wave or quantum mechanical problems as shown in the following subsection. 
 
@@ -265,12 +261,14 @@ For the two electrons in a harmonic oscillator potential problem, as described i
 	\caption{Figure showing the eigenvector for the ground state in the two electron harmonic oscillator potential as described in section \ref{sec:SEtwoelectron} for varying $\omega$.}
 	\label{fig:eigenstates}
 \end{figure*}
-\begin{deluxetable}{lccc}
+
+\begin{deluxetable}{rc}
 	%\tablewidth{0pt}
 	\tablecaption{Table showing a selection of potential strength and the corresponding ground state energy eigenvalues for the two electrons in harmonic oscillator potential problem. These results were produced with a grid size of $n=300$. \label{tab:twoelectronenergy}}
 	%\tablecomments{}
+	
 	\tablecolumns{2}
-	\tablehead{$\omega_r$  &  $\lambda_1$ & }
+	\tablehead{\hspace{0.15\columnwidth}$\omega_r$		\hspace{0.15\columnwidth}&\hspace{0.15\columnwidth} $\lambda_1$ \hspace{0.15\columnwidth}}
 	\startdata
 	$0.01$  & $0.420$   \\
 	$0.05$ & $0.475$  \\
@@ -297,7 +295,7 @@ The ground state energies $\lambda_1$ seen in Table \ref{tab:twoelectronenergy} 
 We have implemented the Jacobi algorithm for finding eigenvalues and applied it to three physical problems. The numerical solutions provided by the algorithm were in agreement with values calculated analytically within an acceptable tolerance. The performance of the algorithm differed from what one would expect which reasonable due to the fact that the problems at hand provided tridiagonal matrices as oppose to dense matrices. For the harmonic oscillator potential problem our results were made with a constant $n$. A natural next step would be to make a grid over different combinations of $n$ and $\rho_{max}$ to find the optimal $\rho_{max}$ for a given matrix dimension.
 
 
-
+\nocite{jensen:2019}
 \bibliographystyle{aasjournal}
 \bibliography{ref}
 
@@ -349,4 +347,4 @@ where $\omega_r$ is a parameter characterizing the harmonic oscillator.
 \end{appendix}
 
 \end{document}
-% End of file `sample62.tex'.
+
