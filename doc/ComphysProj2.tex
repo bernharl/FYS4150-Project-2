@@ -243,19 +243,50 @@ The buckling beam equation, given by equation (\ref{eq:matrix_eq}) was solved us
 \end{figure*}
 For the harmonic oscillator potential described in section \ref{sec:SEharmosc} the first four numerical eigenvalues were compared with the known analytical egenvalues for this problem, namely $3$, $7$, $11$ and $15$. Figure \ref{fig:rhomax} shows the absolute error of the first four eigenvalues compared with their analytical solutions as a function of the dimensionless maximum distance $rho_{max}$. This result was achieved using a matrix of dimensions $400x400$ for each $\rho_{max}$.\\\indent
 \begin{figure*}[h]
+	\plotone{{Figures/iteration}.eps}
+	\caption{Figure showing the number of similarity transforms conducted before the off-diagonal elements are set below a tolerance when solving the buckling beam problem using the Jacobi algorithm.}
+	\label{fig:iteration}
+\end{figure*}
+\begin{figure*}[h]
+	\plotone{{Figures/cputime}.eps}
+	\caption{Figure showing the CPU time as a function of matrix dimension $N$ when solving the buckling beam problem with the jacobi algorithm. The data is compared with the analytical function $f(N)=\frac{3}{2}N^2$.}
+	\label{fig:cputimes}
+\end{figure*}
+The number similarity transforms that had to be conducted was plotted as a function of matrix dimensions $N$ for the buckling beam problem. In this plot we compared it to the analytical function $f(N)=\frac{3}{2}N^2$. This is shown in Figure \ref{fig:iteration}. The cpu time for a complete run through of the Jacobi algorithn was also plotted as a function of matrix dimensions $N$.  This is shown in Figure \ref{fig:cputimes}. For the harmonic oscillator potential described in section \ref{sec:SEharmosc} the first four numerical eigenvalues were compared with the known analytical egenvalues for this problem, namely $3$, $7$, $11$ and $15$. Figure \ref{fig:rhomax} shows the absolute error of the first four eigenvalues compared with their analytical solutions as a function of the dimensionless maximum distance $rho_{max}$. This result was achieved using a matrix of dimensions $N=400$ for each $\rho_{max}$.\\\indent
+\begin{figure*}[h]
 	\plotone{{Figures/rhoN_plots}.eps}
 	\caption{Figure showing the absolute error of the first four eigenvalues for the harmonic oscillator potential described in section \ref{sec:SEharmosc} as a function of varying the dimensionless maximum distance $\rho_{max}$.}
 	\label{fig:rhomax}
 \end{figure*}
-For the two electrons in a harmonic oscillator potential ,as described in section \ref{sec:SEtwoelectron}, the first eigenstate was plotted as a function of $\rho$ for varying degree of the potential strength $\omega_r$.  This is shown in figure \ref{fig:eigenstates}.
+For the two electrons in a harmonic oscillator potential problem, as described in section \ref{sec:SEtwoelectron}, the first eigenstate was plotted as a function of $\rho$ for varying degree of the potential strength $\omega_r$.  This is shown in Figure \ref{fig:eigenstates}. The ground state eigenvalues $\lambda_1$ for selected values for the potential strength $\omega_r$ are tabulated in \ref{tab:twoelectronenergy}.
 \begin{figure*}[h]
 	\plotone{{Figures/eigenstates}.eps}
 	\caption{Figure showing the eigenvector for the ground state in the two electron harmonic oscillator potential as described in section \ref{sec:SEtwoelectron} for varying $\omega$}
 	\label{fig:eigenstates}
 \end{figure*}
+\begin{deluxetable}{lccc}
+	%\tablewidth{0pt}
+	\tablecaption{Table showing a selection of potential strength and the corresponding ground state energy eigenvalues for the two electrons in harmonic oscillator potential problem. These results were produced with a grid size of $N=300$. \label{tab:twoelectronenergy}}
+	%\tablecomments{}
+	\tablecolumns{2}
+	\tablehead{$\omega_r$  &  $\lambda_1$ & }
+	\startdata
+	$0.01$  & $0.420$   \\
+	$0.05$ & $0.475$  \\
+	$0.25$ & $1.250$   \\
+	$0.5$ & $2.230$   \\
+	$1$ & $2.058$ \\
+	$5$ & $17.443$ 
+	\enddata
+\end{deluxetable}
 
 \section{Discussion} \label{sec:discussion}
+When solving the buckling beam problem using the Jacobi algorithm, the relative error between the analytical and numerical eigenvalues increases rapidly before it quickly settles on a constant relative error for the three eigenvalues considered as seen in Figure \ref{fig:relerr}. It worth noting that difference between the constant settling value and the initial error is relatively small. For a $2\times2$ matrix the numerical result should reproduce the exact solution to machine precision. However we have set a tolerance for treating the off-diagonal elements as zero to $\epsilon=1e-8$.  This can be a source for error. When increasing the grid size and approaching a constant relative error, we approximate the system to a higher precision, in which should result in a IKKE FERDIG GITT\\\\\indent
 
+When plotting the number of similarity transforms, as shown in Figure \ref{fig:iteration}, one can see that they increase exponentially as the grid size $N$ increases. Here we compare it to $f(N) =\frac{3}{2}N^2$ as it has a similar slope. This strongly indicates that the number of similarity transforms is proportional to $N^2$ as theory suggests. The CPU time shown in figure \ref{fig:cputimes} shows the same behaviour as the number of similarity transforms plot. For a dense matrix the cpu time should behave proprtional to $n^3$. We have a tridiagonal matrix with a large number of values already set to zero. This can account for the deviation between the measured CPU time and the theoretical.  
+
+
+\section{Conclusion} \label{sec:conclusion}
 The relative error between the numerical and analytical ground state energy eigenvalues of single electron in a harmonic oscillator potential as seen in Figure \ref{fig:rhomax} shows how the error behaves as a function of $\rho_{max}$ at a constant grid size $N = 400$. All four eigenvalues result in relative errors starting out quite high at between 10 and 100. However, the relative error quickly decreases when approaching $rho_{max}\in(4,6)$. Each graph has its minimum in this interval, but not at the same value. It is thus impossible to minimize the relative error for all four eigenvalues at the same time, only enabeling a compromise (see dotted line). We found the best compromise to be at $\rho_{max}\approx 5.2$. At this value the fourth relative error graph is minimized and the remaining are all below the wanted precision of four digits. 
 
 When further increasing $\rho_{max}$ the relative errors again start to grow, as their minima are passed. This sugestes that for a gridsize $N = 400$ a sufficient approximation for an infinit radial distance is $\rho_{max} = 5.2$, as it is the value at which the relative error is at is smallest and at the same time below the set tolerance. Since the minima of the relative errors move upwards for increasing $\rho_{max}$ we cannot represent more than four eigenvalues to the wanted precision. In order to find more eigenvalues to the set tolerance we would thus have to increas the grid size $N$. Thus a further improvment would be to grid over both $N$ and $\rho_{max}$ to produce a contour plot of the relative error, illustrating the best combination of the two griding variables.

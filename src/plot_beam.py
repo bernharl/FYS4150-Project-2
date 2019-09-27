@@ -22,8 +22,9 @@ rel_err2 = np.abs((numerical_data[:,2] - analytical_data[:,2])
                    / analytical_data[:,2])
 rel_err3 = np.abs((numerical_data[:,3] - analytical_data[:,3])
                    / analytical_data[:,3])
-                   
-CPU_time = numerical_data[:,-1]
+
+CPU_time = numerical_data[:,-2]
+iterations = CPU_time = numerical_data[:,-1]
 labels = [rf"$\lambda_{i+1}$" for i in range(3)]
 fig, ax = plt.subplots()
 fig.set_size_inches(2 * 2.9, 2 * 1.81134774961)
@@ -39,7 +40,7 @@ fig.savefig("../doc/figures/eigenrelerr.eps", dpi=1000)
 
 fig,ax = plt.subplots()
 fig.set_size_inches(2 * 2.9, 2 * 1.81134774961)
-ax.plot(N, N**2/1000, label = r"$N^2$")
+ax.plot(N, N**3/1000, label = r"$N^2$")
 ax.plot(N, CPU_time/1000, label=r"$t_{CPU}(N)$")
 ax.set_xlabel(r"$N$")
 ax.set_ylabel("CPU time [s]")
@@ -47,3 +48,14 @@ ax.grid()
 ax.legend()
 fig.tight_layout()
 fig.savefig("../doc/figures/cputime.eps", dpi=1000)
+
+fig,ax = plt.subplots()
+fig.set_size_inches(2 * 2.9, 2 * 1.81134774961)
+ax.plot(N, 1.5*N**2, label = r"$N^2$")
+ax.plot(N, iterations, label="Similarity transforms")
+ax.set_xlabel(r"$N$")
+ax.set_ylabel("# Similarity transforms (N)")
+ax.grid()
+ax.legend()
+fig.tight_layout()
+fig.savefig("../doc/figures/iteration.eps", dpi=1000)
