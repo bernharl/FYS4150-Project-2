@@ -250,7 +250,7 @@ The buckling beam equation, given by (\ref{eq:matrix_eq}) was solved using the J
 \end{figure*}
 \begin{figure*}[h]
 	\plotone{{Figures/cputime}.eps}
-	\caption{Figure showing the CPU-time as a function of matrix dimension $n$ when solving the buckling beam problem with the jacobi algorithm. The data is compared with the analytical function $f(n)=\frac{3}{2}n^2$.}
+	\caption{Figure showing the CPU-time as a function of matrix dimension $n$ when solving the buckling beam problem with the jacobi algorithm.}
 	\label{fig:cputimes}
 \end{figure*}
 For the harmonic oscillator potential described in section \ref{sec:SEharmosc} the first four numerical eigenvalues were compared with the known analytical egenvalues for this problem, namely $3$, $7$, $11$ and $15$. Figure \ref{fig:rhomax} shows the absolute error of the first four eigenvalues compared with their analytical solutions as a function of the dimensionless maximum distance $\rho_{max}$. This result was achieved using a matrix of dimensions $n=400$ for each $\rho_{max}$.\\\indent
@@ -282,20 +282,19 @@ For the two electrons in a harmonic oscillator potential problem, as described i
 \end{deluxetable}
 
 \section{Discussion} \label{sec:discussion}
-When solving the buckling beam problem using the Jacobi algorithm, the relative error between the analytical and numerical eigenvalues increases rapidly before it quickly settles on a constant relative error for the three eigenvalues considered as seen in Figure \ref{fig:relerr}. For a $2\times2$ matrix the numerical result should reproduce the exact solution to machine precision. In our figure $n$ starts at 3. It is worth noting that difference between the constant settling value and the initial error is relatively small. We have set a tolerance for treating the off-diagonal elements as zero to $\epsilon=1e-8$.  The similarity transforms ends when the off-diagonal elements is below this threshold which is constant for every $n$. A further test to this method could be to study the settling value as a function of $\epsilon$. It is also worth noting that we have only studied this behaviour up to $n=100$. This behaviour could change after further increasing $n$.  \\\\\indent
+When solving the buckling beam problem using the Jacobi algorithm, the relative error between the analytical and numerical eigenvalues increases rapidly before it quickly settles on a constant relative error for the three eigenvalues considered. This is seen in Figure \ref{fig:relerr}. In our figure $n$ starts at $n=3$. For a $2\times2$ matrix the numerical result should reproduce the exact solution to machine precision. It is worth noting that difference between the constant settling value and the initial error is relatively small. We have set a tolerance for treating the off-diagonal elements as zero to $\epsilon=1e-8$.  The similarity transforms ends when the off-diagonal elements is below this threshold which is constant for every $n$. In order to further test this method, one could study the settling value as a function of $\epsilon$. It is also worth noting that we have only studied this behaviour up to $n=100$. This behaviour could change after further increasing $n$.
+	When plotting the number of similarity transforms, as shown in Figure \ref{fig:iteration}, one can see that they increase exponentially as the grid size $n$ increases. Here we compare it to $f(n) =\frac{3}{2}n^2$ as it has a similar slope. This strongly indicates that the number of similarity transforms is proportional to $n^2$ as theory suggests. The CPU time shown in Figure \ref{fig:cputimes} shows the same behaviour as the number of similarity transforms plot. For a dense matrix the CPU time should behave proportionally to $n^3$. We have a tridiagonal matrix with a large number of values already set to zero. This can account for the deviation between the measured CPU time and the theoretical.\\\\\indent
 
-When plotting the number of similarity transforms, as shown in Figure \ref{fig:iteration}, one can see that they increase exponentially as the grid size $n$ increases. Here we compare it to $f(n) =\frac{3}{2}n^2$ as it has a similar slope. This strongly indicates that the number of similarity transforms is proportional to $n^2$ as theory suggests. The CPU time shown in figure \ref{fig:cputimes} shows the same behaviour as the number of similarity transforms plot. For a dense matrix the cpu time should behave proprtional to $n^3$. We have a tridiagonal matrix with a large number of values already set to zero. This can account for the deviation between the measured CPU time and the theoretical.  
+The relative error between the numerical and analytical ground state energy eigenvalues of single electron in a harmonic oscillator potential as seen in Figure \ref{fig:rhomax} shows how the error behaves as a function of $\rho_{max}$ at a constant grid size $n = 400$. All four eigenvalues result in relative errors starting out quite high at between ten and 100. However, the relative error quickly decreases when approaching $\rho_{max}\in(4,6)$. Each graph has its minimum in this interval, but not at the same value. It is thus impossible to minimize the relative error for all four eigenvalues at the same time. One has to make a compromise (see dotted line). We found the best compromise to be at $\rho_{max}\approx 5.2$. At this value the fourth relative error graph is minimized and the remaining are all below the wanted precision of four digits. 
 
-The relative error between the numerical and analytical ground state energy eigenvalues of single electron in a harmonic oscillator potential as seen in Figure \ref{fig:rhomax} shows how the error behaves as a function of $\rho_{max}$ at a constant grid size $n = 400$. All four eigenvalues result in relative errors starting out quite high at between 10 and 100. However, the relative error quickly decreases when approaching $rho_{max}\in(4,6)$. Each graph has its minimum in this interval, but not at the same value. It is thus impossible to minimize the relative error for all four eigenvalues at the same time, only enabeling a compromise (see dotted line). We found the best compromise to be at $\rho_{max}\approx 5.2$. At this value the fourth relative error graph is minimized and the remaining are all below the wanted precision of four digits. 
+When further increasing $\rho_{max}$ the relative errors starts to grow again, as their minima are passed. This sugestes that for a grid size of $n = 400$ a sufficient approximation for an infinite radial distance is $\rho_{max} = 5.2$, as it is the value at which the relative error is at is smallest and at the same time below the set tolerance. Since the minima of the relative errors move upwards for increasing $\rho_{max}$ we cannot represent more than four eigenvalues to the wanted precision. In order to find more eigenvalues to the set tolerance we would thus have to increase the grid size $n$. Thus a further improvment would be to grid over both $n$ and $\rho_{max}$ to produce a contour plot of the relative error, illustrating the best combination of the two variables.\\\\\indent
 
-When further increasing $\rho_{max}$ the relative errors again start to grow, as their minima are passed. This sugestes that for a grid size $n = 400$ a sufficient approximation for an infinit radial distance is $\rho_{max} = 5.2$, as it is the value at which the relative error is at is smallest and at the same time below the set tolerance. Since the minima of the relative errors move upwards for increasing $\rho_{max}$ we cannot represent more than four eigenvalues to the wanted precision. In order to find more eigenvalues to the set tolerance we would thus have to increas the grid size $n$. Thus a further improvment would be to grid over both $n$ and $\rho_{max}$ to produce a contour plot of the relative error, illustrating the best combination of the two griding variables.
+For the two electron problem, as shown in Figure \ref{fig:eigenstates}, We can clearly see that when increasing the potential strength $\omega_r$ the wave function peaks closer to the origin, while spreading out more for lower $\omega_r$. This is consistent with expectations from quantum mechanics, as increasing $\omega_r$ decreases the width of the potential well, making it more probable to find the electrons closer to the center of the well at $\rho = 0$.
 
-Next we introduced another electron to the harmonic oscillator, also taking into account the Coulomb interaction between those. The resulting ground state wave functions can be seen in Figure \ref{fig:eigenstates}, for several different potential strengths. We can clearly see that when increasing the potential strength $\omega_r$ the wave function peaks closer to the origin, while spreading out more for lower $\omega_r$. This is consistant with expectations from quantum mechanics, as increasing $\omega_r$ deacreases the width of the potential well, making it more probable to find the electrons closer to the centre of the well at $\rho = 0$.
-
-The ground state energies $\lambda$ seen in Table \ref{tab:twoelectronenergy} corresponding to the eigenstates shown in Figure \ref{fig:eigenstates} illustrate how the energy of the electrons behaves as a function of the potential strength $\omega_r$. Clearly the energy eigenstates increase in value when increasing the potential strength. Thus a steeper potential well increases the systems ground state energy. Furthermore, since we find that our numerical eigenvalues for $\omega_r = 0.25$ and $\omega_r = 0.05$ are consistant to the analytical ones found by \cite{taut:1993} (being about the same up to a factor 2 due to a different scaling; $\lambda_1^{\omega_r = 0.25} = 0.6250$ and $\lambda_1^{\omega_r = 0.05} = 0.175$), we conclude that our results are quite sound.
+The ground state energies $\lambda_1$ seen in Table \ref{tab:twoelectronenergy} corresponding to the eigenstates shown in Figure \ref{fig:eigenstates} illustrate how the energy of the electrons behaves as a function of the potential strength $\omega_r$. Clearly the energy eigenstates increase in value when increasing the potential strength. Thus a steeper potential well increases the systems ground state energy. Furthermore, since we find that our numerical eigenvalues for $\omega_r = 0.25$ and $\omega_r = 0.05$ are consistent with the analytical ones found by \cite{taut:1993} (being about the same up to a factor 2 due to a different scaling; $\lambda_1^{\omega_r = 0.25} = 0.6250$ and $\lambda_1^{\omega_r = 0.05} = 0.175$), we conclude that our results are quite sound.
 
 \section{Conclusion} \label{sec:conclusion}
-We have implemented the Jacobi algorithm for finding eigenvalues and applied it to three physical problems. The numerical solutions provided by the algorithm were in agreement with values calculated analytically within an acceptable tolerance. The performance of the algorithm differed from what one would expect for the problems we applied it to. All of these three physical problems provided tridiagonal matrices. A further way to test the algorithm would be to test matrices on physical problems involving dense matrices. For the harmonic oscillator potential problem our results were made with a constant $n$. A natural next step would be to make a grid over different combinations of $n$ and $\rho_{max}$ to find the optimal $\rho_{max}$ for a given matrix dimension.
+We have implemented the Jacobi algorithm for finding eigenvalues and applied it to three physical problems. The numerical solutions provided by the algorithm were in agreement with values calculated analytically within an acceptable tolerance. The performance of the algorithm differed from what one would expect which reasonable due to the fact that the problems at hand provided tridiagonal matrices as oppose to dense matrices. For the harmonic oscillator potential problem our results were made with a constant $n$. A natural next step would be to make a grid over different combinations of $n$ and $\rho_{max}$ to find the optimal $\rho_{max}$ for a given matrix dimension.
 
 
 
@@ -305,22 +304,21 @@ We have implemented the Jacobi algorithm for finding eigenvalues and applied it 
 \begin{appendix}
 Consider the two-electron Schrödinger equation 
 \begin{align}
-	&\left(-\frac{\hbar^2}{2m}\dv[2]{r_1} -\frac{\hbar^2}{2m}\dv[2]{r_2} + \frac{1}{2}kr_1^2 + \frac{1}{2}kr_2^2 + \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}\right)\nonumber\\
-	&\cdot u(r_1,r_2)= E^{(2)}u(r_1,r_2).
+	\left(-\frac{\hbar^2}{2m}\dv[2]{r_1} -\frac{\hbar^2}{2m}\dv[2]{r_2} + \frac{1}{2}kr_1^2 + \frac{1}{2}kr_2^2 + \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}\right)
+	\cdot u(r_1,r_2)= E^{(2)}u(r_1,r_2).
 \end{align}
 
-The next step in transforming the equation to dimensionless form is to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the centre-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ enabeling to write the Schrödinger equation as
+The next step in transforming the equation to dimensionless form is to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the center-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ enabeling to us write the Schrödinger equation as
 \begin{align}
-&\left(-\frac{\hbar^2}{m}\dv[2]{r} -\frac{\hbar^2}{4m}\dv[2]{R} + \frac{1}{4}kr^2 + kR^2 + \frac{\beta e^2}{r}\right)\nonumber\\
-	&\cdot u(r,R)= E^{(2)}u(r,R).
+\left(-\frac{\hbar^2}{m}\dv[2]{r} -\frac{\hbar^2}{4m}\dv[2]{R} + \frac{1}{4}kr^2 + kR^2 + \frac{\beta e^2}{r}\right)\cdot u(r,R)= E^{(2)}u(r,R).
 \end{align}
 
-Since the relative distance and the centre-of-mass are to independent degrees of freedom, we can use seperation of variables $u(r) = \psi(r)\phi(R)$ to isolate the Schrödinger equation for the relative distance. Since the centre-of-mass equation is just a regular harmonic oscillator potential, similar to the one we solved earlier, we neglect it from here on. The energy of the two-electron system can then be seperated too, as $E^{(2)} = E_r + E_R$, where $E_r$ is the energy of the relative distance equation and $E_R$ is the harmonic oscillator energy of the centre-of-mass frame. 
+Since the relative distance and the center-of-mass are two independent degrees of freedom, we can use separation of variables $u(r) = \psi(r)\phi(R)$ to isolate the Schrödinger equation for the relative distance. Since the center-of-mass equation is just a regular harmonic oscillator potential, similar to the one we solved earlier, we neglect it from here on. The energy of the two-electron system can then be separated too, as $E^{(2)} = E_r + E_R$, where $E_r$ is the energy of the relative distance equation and $E_R$ is the harmonic oscillator energy of the center-of-mass frame. 
 The Schrödinger equation for the relative distance 
 \begin{align}
 	\left(-\frac{\hbar^2}{m}\dv[2]{r} + \frac{1}{4}kr^2 + \frac{\beta e^2}{r}\right)\psi(r) = E_r\psi(r),
 \end{align}
-can similarly to the single-eectrone case, be made dimensionless by inroducing and itroducing the dimensionless variable $\rho = r/\alpha$. 
+can similarly to the single-electron case, be made dimensionless by introducing the dimensionless variable $\rho = r/\alpha$. 
 
 This then gives the equation
 \begin{align}
@@ -339,15 +337,15 @@ introducing a new natural lengths scale
 \begin{align}
 \alpha = \frac{\hbar^2}{m\beta e^2}.
 \end{align}
-Finally we let the energy eigenvalues be rewritten on a dimensionless form 
+Finally we let the energy eigenvalues be rewritten on dimensionless form 
 \begin{align}
 	\lambda = \frac{m\alpha^2}{\hbar^2}E,
 \end{align}
 resulting in the final form of the Schrödinger equation 
 \begin{align}
--\dv[2]{\rho}\psi(\rho) + \omega_r^2\rho^2\psi(\rho) + \frac{1}{\rho} = \lambda\psi(\rho).
+-\dv[2]{\rho}\psi(\rho) + \omega_r^2\rho^2\psi(\rho) + \frac{1}{\rho} = \lambda\psi(\rho),
 \end{align}
-, where $\omega_r$ is a parameter characterizing the harmonic oscillator.
+where $\omega_r$ is a parameter characterizing the harmonic oscillator.
 \end{appendix}
 
 \end{document}
