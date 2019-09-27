@@ -40,7 +40,6 @@ fig.savefig("../doc/figures/eigenrelerr.eps", dpi=1000)
 
 fig,ax = plt.subplots()
 fig.set_size_inches(2 * 2.9, 2 * 1.81134774961)
-ax.plot(N, N**3/1000, label = r"$N^2$")
 ax.plot(N, CPU_time/1000, label=r"$t_{CPU}(N)$")
 ax.set_xlabel(r"$N$")
 ax.set_ylabel("CPU time [s]")
