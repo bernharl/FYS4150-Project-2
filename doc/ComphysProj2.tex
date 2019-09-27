@@ -27,40 +27,23 @@
 \author{Bernhard Nornes Lotsberg}
 
 \begin{abstract}
-adff
+
 \end{abstract}
 
 \section{Introduction} \label{sec:intro}
-When solving physical and mathematical problems, a reoccouring problem is to
-find eigenvalues of a matrix or an opperator. Since a wide variety of problems
-can be solved by setting up and solving eigenvalue equations it is, essential to
-develop efficient methods for finding eigenvalues. 
+When solving physical and mathematical problems, a reoccouring problem is to find eigenvalues of a matrix or an opperator. Since a wide variety of problems can be solved by setting up and solving eigenvalue equations it is, essential to develop efficient methods for finding eigenvalues. 
 
-In this paper we will show how an eigenvalue solver implementing Jacobi's
-algorithm can be used to solve problems like the eigenmodes of the classical
-wave equation and the eigenenergies of the Schrödinger equation for one or two
-electron in a harmonic oscillator potential. Both problems can be rescaled in
-such a way that the resulting equations are on a dimensionless form, then being
-on a generalized form also representative for a variety of different eigenvalue
-problems from several different fields of science. We will explore how the
-numerical and analytical eigenvalues of the problems illustrated compare and how
-the run time of the Jacobi algorithm behaves when changing the grid size.   
+In this paper we will show how an eigenvalue solver implementing Jacobi's algorithm can be used to solve problems like the eigenmodes of the classical wave equation and the eigenenergies of the Schrödinger equation for one or two electron in a harmonic oscillator potential. Both problems can be rescaled in such a way that the resulting equations are on a dimensionless form, then being on a generalized form also representative for a variety of different eigenvalue problems from several different fields of science. We will explore how the numerical and analytical eigenvalues of the problems illustrated compare and how the run time of the Jacobi algorithm behaves when changing the grid size.   
 
 \section{Method} \label{sec:method}
 \subsection{Classical Wave - The Buckling Beam Problem}
-The first example of an eigenvalue problem we show is the classical wave
-equation for a buckeling beam in one dimension
+The first example of an eigenvalue problem we show is the classical wave equation for a buckeling beam in one dimension
 \begin{align}
 	\gamma\dv[2]{u(x)}{x} = -F(x)u(x).
 	\label{eq:beam_wave}
 \end{align} 
-Here $u(x)$ represents the vertical displacement of the beam along the
-$y$-direction. We let $x\in[0,L]$ for a beam length $L$. The constant $\gamma$
-is a material dependent parameter specifying the beams regidity and $F$ is the
-force applyed at the interval $(0, L)$. Next the Dirichlet boundary conditions
-are imposed so that $u(0) = u(L) = 0$. We consider the three parameters $F$, $L$
-and $\gamma$ as known. In order to make the equation more convinient to handle,
-we scale the integration variable to the beam length as 
+Here $u(x)$ represents the vertical displacement of the beam along the $y$-direction. We let $x\in[0,L]$ for a beam length $L$. The constant $\gamma$ is a material dependent parameter specifying the beams regidity and $F$ is the force applyed at the interval $(0, L)$. Next the Dirichlet boundary conditions are imposed so that $u(0) = u(L) = 0$. We consider the three parameters $F$, $L$ and $\gamma$ as known.
+In order to make the equation more convinient to handle, we scale the integration variable to the beam length as 
 \begin{align}
 	\rho = \frac{x}{L},
 \end{align}
@@ -252,24 +235,19 @@ The frequency $\omega_r$ is a parameter directly linked to the strength of the h
 We are case only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$. 
 
 \section{Results} \label{sec:results}
-The buckling beam equation, given by equation (\ref{eq:matrix_eq}) was solved using the Jacobi algorithm as described in section \ref{sec:Jacobi}. Plotting the relative error between the first three of the numerical eigenvalues and analytical eigenvalues given by equation (\ref{eq:analyticaleig}) as a function of increasing the grid size $N$ produced the result shown in Figure \ref{fig:relerr}.
+The buckling beam equation, given by equation (\ref{eq:matrix_eq}) was solved using the Jacobi algorithm as described in section \ref{sec:Jacobi}. Plotting the relative error between the first three of the numerical eigenvalues and analytical eigenvalues given by equation (\ref{eq:analyticaleig}) as a function of increasing the grid size $N$ produced the result shown in Figure \ref{fig:relerr}.\\\indent
 \begin{figure*}[h]
 	\plotone{{Figures/eigenrelerr}.eps}
 	\caption{Figure showing the relative error between the numerical and analytical eigenvalues given by equation \ref{eq:analyticaleig} for the buckling beam problem given by \ref{eq:matrix_eq}. }
 	\label{fig:relerr}
 \end{figure*}
-\begin{figure*}[h]
-	\plotone{{Figures/cputime}.eps}
-	\caption{Figure showing the CPU time as a function of matrix dimension $N$ when solving the buckling beam problem with the jacobi algorithm. The data is compared with the analytical function $f(N)=N^2$.}
-	\label{fig:cputimes}
-\end{figure*}
-The cpu time as a function of matrix dimensions $N$ was compared for buckling beam problem. In this plot we compare it to the analytical function $f(N)=N^2$ This is shown in Figure \ref{fig:cputimes}. For the harmonic oscillator potential described in section \ref{sec:SEharmosc} the first four numerical eigenvalues were compared with the known analytical egenvalues for this problem, namely $3$, $7$, $11$ and $15$. Figure \ref{fig:rhomax} shows the absolute error of the first four eigenvalues compared with their analytical solutions as a function of the dimensionless maximum distance $rho_{max}$. This result was achieved using a matrix of dimensions $400x400$ for each $\rho_{max}$.\\\indent
+For the harmonic oscillator potential described in section \ref{sec:SEharmosc} the first four numerical eigenvalues were compared with the known analytical egenvalues for this problem, namely $3$, $7$, $11$ and $15$. Figure \ref{fig:rhomax} shows the absolute error of the first four eigenvalues compared with their analytical solutions as a function of the dimensionless maximum distance $rho_{max}$. This result was achieved using a matrix of dimensions $400x400$ for each $\rho_{max}$.\\\indent
 \begin{figure*}[h]
 	\plotone{{Figures/rhoN_plots}.eps}
 	\caption{Figure showing the absolute error of the first four eigenvalues for the harmonic oscillator potential described in section \ref{sec:SEharmosc} as a function of varying the dimensionless maximum distance $\rho_{max}$.}
 	\label{fig:rhomax}
 \end{figure*}
-For the two electrons in a harmonic oscillator potentia, as described in section \ref{sec:SEtwoelectron}, the first eigenstate was plotted as a function of $\rho$ for varying degree of the potential strength $\omega_r$.  This is shown in Figure \ref{fig:eigenstates}.
+For the two electrons in a harmonic oscillator potential ,as described in section \ref{sec:SEtwoelectron}, the first eigenstate was plotted as a function of $\rho$ for varying degree of the potential strength $\omega_r$.  This is shown in figure \ref{fig:eigenstates}.
 \begin{figure*}[h]
 	\plotone{{Figures/eigenstates}.eps}
 	\caption{Figure showing the eigenvector for the ground state in the two electron harmonic oscillator potential as described in section \ref{sec:SEtwoelectron} for varying $\omega$}
@@ -278,11 +256,18 @@ For the two electrons in a harmonic oscillator potentia, as described in section
 
 \section{Discussion} \label{sec:discussion}
 
+The relative error between the numerical and analytical ground state energy eigenvalues of single electron in a harmonic oscillator potential as seen in Figure \ref{fig:rhomax} shows how the error behaves as a function of $\rho_{max}$ at a constant grid size $N = 400$. All four eigenvalues result in relative errors starting out quite high at between 10 and 100. However, the relative error quickly decreases when approaching $rho_{max}\in(4,6)$. Each graph has its minimum in this interval, but not at the same value. It is thus impossible to minimize the relative error for all four eigenvalues at the same time, only enabeling a compromise (see dotted line). We found the best compromise to be at $\rho_{max}\approx 5.2$. At this value the fourth relative error graph is minimized and the remaining are all below the wanted precision of four digits. 
+
+When further increasing $\rho_{max}$ the relative errors again start to grow, as their minima are passed. This sugestes that for a gridsize $N = 400$ a sufficient approximation for an infinit radial distance is $\rho_{max} = 5.2$, as it is the value at which the relative error is at is smallest and at the same time below the set tolerance. Since the minima of the relative errors move upwards for increasing $\rho_{max}$ we cannot represent more than four eigenvalues to the wanted precision. In order to find more eigenvalues to the set tolerance we would thus have to increas the grid size $N$. Thus a further improvment would be to grid over both $N$ and $\rho_{max}$ to produce a contour plot of the relative error, illustrating the best combination of the two griding variables.
+
+Next we introduced another electron to the harmonic oscillator, also taking into account the Coulomb interaction between those. The resulting ground state wave functions can be seen in Figure \ref{fig:eigenstates}, for several different potential strengths. We can clearly see that when increasing the potential strength $\omega_r$ the wave function peaks closer to the origin, while spreading out more for lower $\omega_r$. This is consistant with expectations from quantum mechanics, as increasing $\omega_r$ deacreases the width of the potential well, making it more probable to find the electrons closer to the centre of the well at $\rho = 0$.
+
+The ground state energies $\lambda$ seen in Table \ref{tab:twoelectronenergy} corresponding to the eigenstates shown in Figure \ref{fig:eigenstates} illustrate how the energy of the electrons behaves as a function of the potential strength $\omega_r$. Clearly the energy eigenstates increase in value when increasing the potential strength. Thus a steeper potential well increases the systems ground state energy. Furthermore, since we find that our numerical eigenvalues for $\omega_r = 0.25$ and $\omega_r = 0.05$ are consistant to the analytical ones found by \cite{taut:1993} (being about the same up to a factor 2 due to a different scaling; $\lambda_1^{\omega_r = 0.25} = 0.6250$ and $\lambda_1^{\omega_r = 0.05} = 0.175$), we conclude that our results are quite sound.
+
 \section{Conclusion} \label{sec:conclusion}
 
-
-\begin{thebibliography}{}
-\end{thebibliography}
+\bibliographystyle{aasjournal}
+\bibliography{ref}
 
 \begin{appendix}
 Consider the two-electron Schrödinger equation 
