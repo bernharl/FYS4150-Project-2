@@ -31,19 +31,21 @@
 \end{abstract}
 
 \section{Introduction} \label{sec:intro}
-When solving physical and mathematical problems, a reoccouring problem is to find eigenvalues of a matrix or an opperator. Since a wide variety of problems can be solved by setting up and solving eigenvalue equations it is, essential to develop efficient methods for finding eigenvalues. 
+When solving physical and mathematical problems, a recurring problem is to find eigenvalues of a matrix or an operator. Since a wide variety of problems can be solved by setting up and solving eigenvalue equations it is, essential to develop efficient methods for finding eigenvalues. 
 
-In this paper we will show how an eigenvalue solver implementing Jacobi's algorithm can be used to solve problems like the eigenmodes of the classical wave equation and the eigenenergies of the Schrödinger equation for one or two electron in a harmonic oscillator potential. Both problems can be rescaled in such a way that the resulting equations are on a dimensionless form, then being on a generalized form also representative for a variety of different eigenvalue problems from several different fields of science. We will explore how the numerical and analytical eigenvalues of the problems illustrated compare and how the run time of the Jacobi algorithm behaves when changing the grid size.   
+In this paper we will show how an eigenvalue solver implementing Jacobi's algorithm can be used to solve problems like the eigenmodes of the classical wave equation and the eigenenergies of the Schrödinger equation for one or two electron in a harmonic oscillator potential. Both problems can be rescaled in such a way that the resulting equations are on dimensionless form. On this generalized, dimensionless form, it covers several physical eigenvalue problems, making this a very versatile method. We will explore how the numerical and analytical eigenvalues of the problems illustrated compare and how the run time of the Jacobi algorithm varies with different grid sizes.
+
+JEFF Our method section states needed theory and outlines the physical problems to be solved and the strategies we employ to solve them. The results produced are presented in the results section. JEFF   
 
 \section{Method} \label{sec:method}
 \subsection{Classical Wave - The Buckling Beam Problem}
-The first example of an eigenvalue problem we show is the classical wave equation for a buckeling beam in one dimension
+The first example of an eigenvalue problem we present is the classical wave equation for a buckling beam in one dimension
 \begin{align}
 	\gamma\dv[2]{u(x)}{x} = -F(x)u(x).
 	\label{eq:beam_wave}
 \end{align} 
-Here $u(x)$ represents the vertical displacement of the beam along the $y$-direction. We let $x\in[0,L]$ for a beam length $L$. The constant $\gamma$ is a material dependent parameter specifying the beams regidity and $F$ is the force applyed at the interval $(0, L)$. Next the Dirichlet boundary conditions are imposed so that $u(0) = u(L) = 0$. We consider the three parameters $F$, $L$ and $\gamma$ as known.
-In order to make the equation more convinient to handle, we scale the integration variable to the beam length as 
+Here $u(x)$ represents the vertical displacement of the beam along the $y$-direction. We let $x\in[0,L]$ for a beam length $L$. The constant $\gamma$ is a material dependent parameter specifying the beams rigidity and $F$ is the force applied at the interval $(0, L)$. Next the Dirichlet boundary conditions are imposed so that $u(0) = u(L) = 0$. We consider the three parameters $F$, $L$ and $\gamma$ to be known.
+In order to make the equation more convenient to handle, we scale the integration variable to the beam length as 
 \begin{align}
 	\rho = \frac{x}{L},
 \end{align}
@@ -52,7 +54,7 @@ so that the new dimensionless integration variable $\rho\in[0, 1]$. We can now r
 	\dv[2]{u(\rho)}{\rho} = -\frac{FL^2}{\gamma}u(\rho) = -\lambda u(\rho),
 	\label{eq:wave_eq_dimless}
 \end{align}
-where we define $\lambda = \frac{FL^2}{\gamma}$. In order to solve (\ref{eq:wave_eq_dimless}) for the $\lambda$'s numerically the discretisation $\rho\to\rho_i = \rho_0 + ih$ with $i = 0, 1, 2, 3, \ldots n-1$, is itroduced resulting in the discrete equation
+where we define $\lambda = \frac{FL^2}{\gamma}$. In order to solve (\ref{eq:wave_eq_dimless}) for the $\lambda$'s numerically the discretization $\rho\to\rho_i = \rho_0 + ih$  is introduced, where with $i = 0, 1, 2, 3, \ldots n-1$. The equation written on discrete form is then
 
 \begin{align}
 	\dv[2]{u_i}{x} &\approx
@@ -86,18 +88,18 @@ are known we can later compare these to those found numerically.
 
 \subsection{Eigenvalue Solver - Jacobi's Algorithm}
 \label{sec:Jacobi}
-The eigenvalue solver we will show is using the Jacobi algorithm, which converges quite stabely yet very slowly. The essence of the algorithm is that we can rotate the column space of $A$ around different axis in the $n$ dimensional space using similarity transforms to obtain a diagonal matrix $D$ being similar to $A$. Due to the similarity between $D$ and $A$, the diagonal elements $d_ii = \lambda_i$ being the eigenvalues of $D$ are eigenvalues of $A$ too.
+The eigenvalue solver we will show applies the Jacobi algorithm, which converges quite stably, yet very slowly. The essence of the algorithm is that we can rotate the column space of $A$ around different axes in the $n$ dimensional space using similarity transforms, obtaining a diagonal matrix $D$ being similar to $A$. Due to the similarity between $D$ and $A$, the diagonal elements $d_{ii} = \lambda_i$, being the eigenvalues of $D$, are also eigenvalues of $A$.
 
-The similarity transforms used in the Jacobi algorithm is based on a sequence of orthogonal transforms. In an orthogonal transformation an orthogonal basis $F = \{\vec{v}_i | i = 1, 2, \ldots, n\}$, keeps its orthogonality. Meaning that the basis vectors in the new basis $G = \{\vec{w}_i | i = 1, 2, \ldots, n\}$ where $\vec{w}_i = U\vec{v}_i$ forms a new orthogonal basis for the same space as before the transformation, if $U$ is orthogonal i.e. $UU^T = U^TU = I_n$ giving $U^{-1} = U^T$. Therefore the inner product of basis vectors in $G$ give 
+The similarity transforms used in the Jacobi algorithm is based on a sequence of orthogonal transforms. In an orthogonal transformation an orthogonal basis $F = \{\vec{v}_i | i = 1, 2, \ldots, n\}$, keeps its orthogonality. Meaning that the basis vectors in the new basis $G = \{\vec{w}_i | i = 1, 2, \ldots, n\}$ where $\vec{w}_i = U\vec{v}_i$ form a new orthogonal basis for the same space as before the transformation if $U$ is orthogonal i.e. $UU^T = U^TU = I_n$ giving $U^{-1} = U^T$. Therefore the inner product of basis vectors in $G$ give 
 \begin{align}
 	\vec{w}_i\cdot \vec{w}_j &= w_i^Tw_j = (Uv_i)^T(Uv_j) \\
 	&= v_i^TU^TUv_j = v_i^Tv_j = \delta_{ij},
 \end{align}
-since $v_i^Tv_j = \delta_{ij}$ due to the orthogonality of the basis $F$.
+due to the orthogonality of the basis $F$.
 
-When transforming $A$ into a diagonal matrix $D$ we need to eliminate the off-diagonal elements of $A$. This is done by similarity transform $B$ of $A$ is then written as  
+When transforming $A$ into a diagonal matrix $D$ we need to eliminate the off-diagonal elements of $A$. A single similarity transform $B$ of the matrix $A$ is written as
 \begin{align}
-	B = S^T A S,
+	B = S^T A S
 \end{align}
 for a rotational matrix 
 \begin{align}
@@ -126,41 +128,41 @@ Multiplying out the above similarity transform we get
 	b_{kl} &= (a_{kk} - a_{ll})cs + a_{kl}(c^2 - s^2).
 	\label{eq:b_kl}
 \end{align}
-Since we want to zero out the off-diagonals of $A$ we require that (\ref{eq:b_kl}) is zeroed out $b_{kl} = b_{lk} = 0$. Defining 
+Since we want to zero out the off-diagonals of $A$ we require that (\ref{eq:b_kl}) is zeroed out, i.e. $b_{kl} = b_{lk} = 0$. Defining 
 \begin{align}
 	\cot(2\theta) = \tau = \frac{a_{ll} - a_{kk}}{2a_{kl}}
 \end{align}
-we get a quadratic equation $t^2 + 2\tau t - 1 = 0$, where $t = \tan \theta$, the requirement from $b_{kl} = 0$. From this quadratic equation we get that 
+we get a quadratic equation $t^2 + 2\tau t - 1 = 0$, where $t = \tan \theta$, following the requirement $b_{kl} = 0$. From this quadratic equation we get that 
 \begin{align}
 	t &= -\tau \pm \sqrt{1+\tau^2}\\
 	c & = \frac{1}{\sqrt{1+t^2}}\\
 	s &= tc.
 \end{align}
-This way we can tune the angle $\theta$ in order to zero out $b_{kl}$ and then find the remaining elements of $B$.  Unfortunatlly the way $t$ is defined is numerically unstable. If $\tau\gg1$ a computer will let $1+\tau^2 = \tau^2$ resulting in $t = -\tau \pm \tau$ which is of course not correct. Using some simple algebra we rewrite $t = -\frac{1}{-\tau \pm \sqrt{1 + \tau^2}}$, which is more numerically stable. Choose to let $t = \frac{1}{\tau + \sqrt{1 + \tau^2}}$ whenever $\tau>0$ and let $t = -\frac{1}{-\tau + \sqrt{1+\tau^2}}$ when $t<0$, We circumvent the subtraction of almost equal numbers in the denominator resulting in division by zero.
+This way we can tune the angle $\theta$ in order to zero out $b_{kl}$ and then find the remaining elements of $B$.  The way $t$ is defined is numerically unstable. If $\tau\gg1$ a computer will let $1+\tau^2 = \tau^2$ resulting in $t = -\tau \pm \tau$ which is not correct. Using some simple algebra we rewrite $t = -\frac{1}{-\tau \pm \sqrt{1 + \tau^2}}$, which is more numerically stable. Let $t = \frac{1}{\tau + \sqrt{1 + \tau^2}}$ whenever $\tau>0$ and let $t = -\frac{1}{-\tau + \sqrt{1+\tau^2}}$ when $t<0$, thus circumventing  subtraction of almost equal numbers in the denominator which can resulting in division by zero.
 
 As shown by (SITER KOMPENDIET TIL MORTEN HER) for a $2\time 2$-matrix w.l.o.g., the off-diagonal norm of a similarity transform $B$ is 
 \begin{align}
 \text{Off}(B)^2&= \sum_{i\neq j} |b_{ij}^2| = ||A||_F^2 - 2a_{kl},
 \label{eq:Off_reduction}
 \end{align}
-being reduced in size for each transfrom. The question is now, which elements $a_{kl}$ should be eliminated each time we perform a similarity transform? This is best answered by looking at (\ref{eq:Off_reduction}); if we choose $a_{kl}$ to be the greatest off-diagonal element of $A$ we reduce $\text{Off}(B)^2$ by the greatest possible value for each iteration. 
+being reduced in size for each transform. To determine which elements $a_{kl}$ should be eliminated each time we perform a similarity transform, we look at (\ref{eq:Off_reduction}); if we choose $a_{kl}$ to be the greatest off-diagonal element of $A$ we reduce $\text{Off}(B)^2$ by the largest possible value for each iteration. 
 
 Since we want to end up with a diagonal matrix $D$ we need to make the off-diagonal norm approach zero through multiple similarity transforms. In practice this corresponds to iterate over similarity transforms, until 
 \begin{align}
 \text{Off}(A) \geq \max_{i\neq j}(a_{ij}^2) = a_{kl}^2 \leq \epsilon,
 \end{align}
 for a tolerance $\epsilon$ typically $\sim 10^{-8}$. We can thus use 
-$\max_{i\neq j}(a_{ij}^2)\leq \epsilon$ as a criterion for when to stop the similarity transforms, instead of calculating $\text{Off}(A)$ which is rather time consuming.
+$\max_{i\neq j}(a_{ij}^2)\leq \epsilon$ as a stopping criterion for the while loop performing the similarity transforms, instead of calculating $\text{Off}(A)$ which can be time consuming.
 
-The \texttt{while}-loop iterating over the similarity transform thus stops when $\max_{i\neq j}(a_{ij}^2) \leq \epsilon$. After having looped over the similarity transforms the remaining matrix should be diagonal withing the tolerance, making it easy to extract the eigenvalues $\lambda_i$. In case we want to find the eigenvectors corresponding to the eigenvalues found, we simply rotate an arbritrary orthogonal basis for $\mathcal{R}^n$ for each loop iteration using the corresponding rotation $S$. We simply contain the input basis vectors in a matrix $E$, e.g. the identity matrix, and rotate them one rotation by multiplying $SE$. This is also done in the loop so that 
+After having looped over the similarity transforms the remaining matrix should be diagonal withing the tolerance, making it easy to extract the eigenvalues $\lambda_i$. To find the corresponding eigenvectors, we rotate an arbitrary orthogonal basis for $\mathcal{R}^n$ for each loop iteration using the corresponding rotation $S$. We then contain the input basis vectors in a matrix $E$, e.g. the identity matrix, and rotate them one rotation by multiplying $SE$. This is also done in the loop so that 
 \begin{align}
 	e_{ik} &= ce_{ik} - se_{il}\\
 	e_{il} &= ce_{il} + se_{ik}.
 \end{align}
 
-As discussed by (SITER MORTENS KOMPENDIUM HER) the Jacobi algorithm usually requires between $3n^2-5n^2$ rotations, and each rotation has about $4n$ operations, resulting in $13n^3-20n^3$ operations to zero out the off-diagonal elements. Since we only consider sparse matrices in our case, we would expect $\sim n$ rotations needed to diagonalise. 
+As discussed by (SITER MORTENS KOMPENDIUM HER) the Jacobi algorithm usually requires between $3n^2-5n^2$ rotations, and each rotation requires $\sim 4n$ operations, resulting in $13n^3-20n^3$ operations to zero out the off-diagonal elements. Since we only consider sparse matrices in our case, we expect $\sim n$ rotations needed to diagonalize. 
 
-The Jacobi algorithm can now be used to solve eigenvalue problems for symmetrical matrices like the buckeling beam wave or quantum mechanical problems as shown in the following subsection. 
+The Jacobi algorithm can now be used to solve eigenvalue problems for symmetrical matrices like the buckling beam wave or quantum mechanical problems as shown in the following subsection. 
 
 \subsection{Schrödinger's Equation - One Electron in a Harmonic Oscillator potential}
 
@@ -169,23 +171,23 @@ Next we show how to apply the Jacobi algorithm to find the energy eigenvalues of
 \begin{align}
 -\frac{\hbar^2}{2m}\left(\frac{1}{r^2}\dv{r}r^2\dv{r} - \frac{l(l+1)}{r^2}\right)R(r) + V(r)R(r) = E R(r),
 \end{align}
-where $V(r) = \frac{1}{2}kr^2$ with $k = m\omega^2$, and the energies $E$ of the electron in the harmonic oscillator in three dimensions is given as 
+where $V(r) = \frac{1}{2}kr^2$ with $k = m\omega^2$, and the energies $E$ of the electron in the harmonic oscillator in three dimensions are given as 
 \begin{align}
 	E_{nl} = \hbar\omega\left(2n + l + \frac{3}{2}\right),
 \end{align}
-where $n = 0, 1, 2,\ldots$ and $l = 0, 1, 2, \ldots$. $n$ and $l$ represent the principal and orbital momentum quantum numbers. We let the radial distance $r\in[0,\infty)$. Next we let $R(r) = \frac{u(r)}{r}$ so that 
+where $n = 0, 1, 2,\ldots$ and $l = 0, 1, 2, \ldots$, representing the principal and orbital momentum quantum numbers. We let the radial distance $r\in[0,\infty)$. Next we let $R(r) = \frac{u(r)}{r}$ so that 
 \begin{align}
 	-\frac{\hbar^2}{2m}\dv[2]{r}u(r) + \left(V(r) + \frac{l(l+1)}{r^2}\frac{\hbar^2}{2m}\right)u(r) = Eu(r).
 	\label{eq:u_r}
 \end{align}
 In order to reflect reality we must require $u(0) = u(\infty) = 0$, as the wave function of the electron must fall of to zero when going to infinity. 
 
-To ensure a safer handling of the equation we introduce the dimensionless radial distance $\rho = \frac{r}{\alpha}$, where $\alpha$ is a parameter with dimension length. Inserting this into (\ref{eq:u_r}) we obtain
+To ensure safer handling of the equation we introduce the dimensionless radial distance $\rho = \frac{r}{\alpha}$, where $\alpha$ is a parameter with dimension length. Inserting this into (\ref{eq:u_r}) we obtain
 \begin{align}
 	-\frac{\hbar^2}{2m\alpha^2}\dv[2]{\rho}u(\rho) + \left(V(\rho) + \frac{l(l+1)}{\rho^2}\frac{\hbar^2}{2m\alpha^2}\right)u(\rho) = Eu(\rho).
 	\label{eq:schrodinger_rho}
 \end{align}
-To simplify things further we only consider the case where $l=0$. Then inserting the dimensionless potensial $V(\rho) = \frac{k}{2}\alpha^2\rho^2u(\rho)$ into (\ref{eq:schrodinger_rho}) we can rewrite the equation as 
+To simplify things further we only consider the case where $l=0$. Inserting the dimensionless potential $V(\rho) = \frac{k}{2}\alpha^2\rho^2u(\rho)$ into (\ref{eq:schrodinger_rho}) we can rewrite the equation as 
 \begin{align}
 	-\frac{\hbar^2}{2m\alpha^2} \dv[2]{\rho} u(\rho) + \frac{k}{2}\alpha^2\rho^2u(\rho) = Eu(\rho),
 \end{align}
@@ -205,34 +207,34 @@ The Schrödinger equation is now on a dimensionless form
 	-\dv[2]{\rho}u(\rho) + \rho^2u(\rho) = \lambda u(\rho),
 	\label{eq:schrodinger_dimless}
 \end{align}
-where $V(\rho)=\rho^2$ is now an effective potential.
-In order to solve for the eigenvaules numerically we discretize the equation so that 
+where $V(\rho)=\rho^2$ represents the effective potential.
+To solve for the eigenvaules numerically we discretize the equation so that 
 \begin{align}
 	&-\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + \rho_i^2 u_i \\
 	&= -\frac{u_{i+1} - 2u_i + u_{i-1}}{h^2} + V_iu_i = \lambda u_i, 
 \end{align}
-letting the effective potential $V_i = \rho_i^2$. The step size $h$ has the same form as shown earlier only for a different $\rho_n$. Since we need the wave function $u(\rho)$ to tent to zero at infinity, $\rho\to \infty$, we must set $\rho_{max} =\rho_n= \infty$. However, using a comuter to solve this eigenvalue problem it is impossible to let $\rho_{max} = \infty$, meaning we need to find a suitably large number to approximate infinity. The approximation of infinity will also be dependent on the matrix size, meaning we have to balance our choiced for the parameter $\rho_{max}$ and $n$ in order to acheive the wanted precision in the eigenvalues. Now, from this discritesiation we can write the equation on the same matrix form as (\ref{eq:matrix_eq}), only this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ and similarly the secondary diagonals $e_i = -\frac{1}{h^2}$.
-Having the quamtum mechanical problem on matrix form we can use Jacobi's algorithm to solve it, and then compare the numerical eigenvalues to the analytical solutions $\lambda = 3, 7, 11, 15, \ldots$.
+letting the effective potential $V_i = \rho_i^2$. The step size $h$ has the same form as shown earlier only for a different $\rho_n$. Since we need the wave function $u(\rho)$ to tend to zero at infinity, $\rho\to \infty$, we must set $\rho_{max} =\rho_n= \infty$. However, representing infinity on a computer is not possible, meaning we need to find a suitably large number to approximate infinity. The approximation of infinity will also be dependent on the matrix size, meaning we have to balance our choice of parameters $\rho_{max}$ and $n$ in order to achieve the wanted precision in the eigenvalues. From this discretization we can write the equation on the same matrix form as (\ref{eq:matrix_eq}), this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ and similarly the secondary diagonals $e_i = -\frac{1}{h^2}$.
+Having the quantum mechanical problem on matrix form we can use Jacobi's algorithm to solve it, and then compare the numerical eigenvalues to the analytical solutions $\lambda = 3, 7, 11, 15, \ldots$.
 
-\subsection{Schrödingers Equation - Two Electrons in a Harmonic Oscillator potential}
+\subsection{Schrödingers Equation - Two Electrons in a Harmonic Oscillator Potential}
 
 \label{sec:SEtwoelectron}
-Another problem from quantum mechanics worth considering is the Coulomb interaction between two electrons in a harmonic oscillator potential, in three dimensions, as this has an analytical solution we can use as comparison. 
+Another problem from quantum mechanics worth considering is the Coulomb interaction between two electrons in a three dimensional harmonic oscillator potential, which has analytical solutions usable for comparison.
 
-When adding another electron to the earlier single-electron case, we need to introduce the Coulomb interaction too, giving the Schrödinger equation 
+When adding another electron to the earlier single-electron case, we also need to introduce the Coulomb interaction, resulting in the Schrödinger equation on the following form
 \begin{align}
 	&\left(-\frac{\hbar^2}{2m}\dv[2]{r_1} -\frac{\hbar^2}{2m}\dv[2]{r_2} + \frac{1}{2}kr_1^2 + \frac{1}{2}kr_2^2 + \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}\right)\nonumber\\
 	&\cdot u(r_1,r_2)= E^{(2)}u(r_1,r_2).
 \end{align}
-Here the Coulomb potential $V_{coul} = \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}$ for $\beta e^2 = 1.44$ eVnm, the energy of the twoelectrons system is $E^{(1)}$ and the positions of the electrons are given as $r_1$ and $r_2$. 
+Here the Coulomb potential $V_{coul} = \frac{\beta e^2}{|\vec{r}_1 - \vec{r_2}|}$ for $\beta e^2 = 1.44$ eVnm, the energy of the two electron system is $E^{(2)}$ and the positions of the electrons are given as $r_1$ and $r_2$. 
 
-It is now convinient to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the centre-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ in order to split the Schrödinger equation into two by seperation of variables, $u(r) = \psi(r)\phi(R)$. We from now on only consider the relative distance equation for $\psi(r)$ as the centre-of-mass equation is simply another harmonic oscillator previously shown how to solve. Then we introduce a convinient scaling to make the equation dimensionless so as to solve it using Jacobi's algorithm. As this is completely analogous to the previously shown single-electron case we jump ahead to the final form of the dimensionless equation (See Appendix for detailed description of scaling and seperation of variables):
+It is now convenient to introduce the relative distance $\vec{r} = \vec{r}_1 - \vec{r}_2$ and the center-of-mass $\vec{R} = \frac{1}{2}(\vec{r}_1 - \vec{r}_2)$ in order to split the Schrödinger equation in two by separation of variables, $u(r) = \psi(r)\phi(R)$. We now only consider the equation for $\psi(r)$ as the center-of-mass equation is simply another harmonic oscillator previously shown how to solve. We introduce a convenient scaling to make the equation dimensionless so as to solve it using Jacobi's algorithm. As this is completely analogous to the previously shown single-electron case we jump ahead to the final form of the dimensionless equation (See Appendix for detailed description of scaling and seperation of variables):
 \begin{align}
 -\dv[2]{\rho}\psi(\rho) + \omega_r^2\rho^2\psi(\rho) + \frac{1}{\rho} = \lambda\psi(\rho).
 \end{align}
-The frequency $\omega_r$ is a parameter directly linked to the strength of the harmonic oscillator potential. The discetisation and reformulation as a matrix problem in this case is done completely analogous to the previously shown examples, this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ for $V_i = \omega_r^2\rho^2 + \frac{1}{\rho}$.
+The frequency $\omega_r$ is a parameter directly linked to the strength of the harmonic oscillator potential. The discetization and reformulation as a matrix problem in this case is done completely analogously to the single electron case, this time using diagonal elements $d_i = \frac{2}{h^2} + V_i$ for $V_i = \omega_r^2\rho^2 + \frac{1}{\rho}$.
 
-We are case only intrested in the ground state of the system, thus we let $l=0$. The systems ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different choices of the potential strength $\omega_r$. 
+We are only interested in the ground state of the system, thus we let $l=0$. The system's ground state eigenvalues, found through the Jacobi algorithm, are then compared to the analytical solutions and the eigenstates are plotted for different strengths $\omega_r$ of the harmonic oscillator potential.
 
 \section{Results} \label{sec:results}
 The buckling beam equation, given by equation (\ref{eq:matrix_eq}) was solved using the Jacobi algorithm as described in section \ref{sec:Jacobi}. Plotting the relative error between the first three of the numerical eigenvalues and analytical eigenvalues given by equation (\ref{eq:analyticaleig}) as a function of increasing the grid size $N$ produced the result shown in Figure \ref{fig:relerr}. The number similarity transforms that had to be conducted was plotted as a function of matrix dimensions $N$ for the buckling beam problem. In this plot we compared it to the analytical function $f(N)=\frac{3}{2}N^2$. This is shown in Figure \ref{fig:iteration}. The cpu time for a complete run through of the Jacobi algorithn was also plotted as a function of matrix dimensions $N$.  This is shown in Figure \ref{fig:cputimes}\\\indent
