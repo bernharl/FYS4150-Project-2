@@ -14,7 +14,7 @@
 
 \begin{document}
 
-\title{Project 2 FYS4150}
+\title{Solving Eigenvalue Problems by Means of the Jacobi Algorithm}
 
 \author{Håkon Tansem}
 
@@ -161,6 +161,18 @@ As discussed by \citep[p. 217]{Jensen:2015} the Jacobi algorithm usually require
 
 The Jacobi algorithm can now be used to solve eigenvalue problems for symmetrical matrices like the buckling beam wave or quantum mechanical problems as shown in the following subsection. 
 
+\begin{figure*}[h]
+	\plotone{{Figures/eigenrelerr}.eps}
+	\caption{Figure showing the relative error between the numerical and analytical eigenvalues, given by equation \ref{eq:analyticaleig}, as a function of $n$ for the buckling beam problem given by (\ref{eq:matrix_eq}). Here $n$ starts at $n=3$. }
+	\label{fig:relerr}
+\end{figure*}
+
+\begin{figure*}[h]
+	\plotone{{Figures/iteration}.eps}
+	\caption{Figure showing the number of similarity transforms conducted before the off-diagonal elements are set below a tolerance when solving the buckling beam problem using the Jacobi algorithm.}
+	\label{fig:iteration}
+\end{figure*}
+
 \subsection{Schrödinger's Equation - One Electron in a Harmonic Oscillator potential}
 
 \label{sec:SEharmosc}
@@ -235,16 +247,7 @@ We are only interested in the ground state of the system, thus we let $l=0$. The
 
 \section{Results} \label{sec:results}
 The buckling beam equation, given by (\ref{eq:matrix_eq}) was solved using the Jacobi algorithm as described in section \ref{sec:Jacobi}. Plotting the relative error between the first three of the numerical eigenvalues and analytical eigenvalues given by (\ref{eq:analyticaleig}) as a function of increasing the grid size $n$ produced the result shown in Figure \ref{fig:relerr}. The number of similarity transforms needed are plotted as a function of matrix dimensions $n$ for the buckling beam problem. In this plot we compare it to the analytical function $f(n)=\frac{3}{2}n^2$ as well. This is shown in Figure \ref{fig:iteration}. The CPU-time for a complete run through of the Jacobi algorithm is also plotted as a function of matrix dimensions $n$.  This is shown in Figure \ref{fig:cputimes}\\\indent
-\begin{figure*}[h]
-	\plotone{{Figures/eigenrelerr}.eps}
-	\caption{Figure showing the relative error between the numerical and analytical eigenvalues, given by equation \ref{eq:analyticaleig}, as a function of $n$ for the buckling beam problem given by (\ref{eq:matrix_eq}). Here $n$ starts at $n=3$. }
-	\label{fig:relerr}
-\end{figure*}
-\begin{figure*}[h]
-	\plotone{{Figures/iteration}.eps}
-	\caption{Figure showing the number of similarity transforms conducted before the off-diagonal elements are set below a tolerance when solving the buckling beam problem using the Jacobi algorithm.}
-	\label{fig:iteration}
-\end{figure*}
+
 \begin{figure*}[h]
 	\plotone{{Figures/cputime}.eps}
 	\caption{Figure showing the CPU-time as a function of matrix dimension $n$ when solving the buckling beam problem with the jacobi algorithm.}
